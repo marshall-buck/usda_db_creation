@@ -212,11 +212,10 @@ class FileService {
   /// Synchronously opens a file from [filePath].  Returns the contents as a [String].
   String loadData({required String filePath}) {
     final file = File(filePath);
-    final contents = file.readAsStringSync();
     if (!file.existsSync()) {
       throw FileSystemException('File not found', filePath);
     }
-    return contents;
+    return file.readAsStringSync();
   }
 
   /// Reads a CSV file from the given [filePath] and returns its contents as a

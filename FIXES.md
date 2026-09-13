@@ -1,18 +1,16 @@
 # Fixes
 
-Outstanding code smells from the review. The README mismatches found in the same
-pass are already fixed and are not listed here.
-
+Outstanding code smells from the review.
 🔴 = open task.
 
 ## Correctness / performance
 
-🔴 `lib/autocomplete.dart:188` — `_findHashKey` linear-scans `_indexHash` for
+✅ `lib/autocomplete.dart:188` — `_findHashKey` linear-scans `_indexHash` for
 every substring: 22,529 substrings × ~5,007 buckets ≈ 56M `ListEquality`
 compares on the real DB. Key on a canonical string of the id list to make it
 O(n).
 
-🔴 `lib/file_service.dart:213` — `loadData` calls `readAsStringSync` *before*
+✅ `lib/file_service.dart:213` — `loadData` calls `readAsStringSync` *before*
 `existsSync`, so the `FileSystemException('File not found')` is unreachable.
 
 🔴 `lib/file_service.dart:132,144,162,190` — every writer swallows its exception

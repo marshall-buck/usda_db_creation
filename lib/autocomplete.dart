@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:usda_db_creation/data_structure.dart';
 import 'package:usda_db_creation/db_parser.dart';
 import 'package:usda_db_creation/extensions/map_ext.dart';
@@ -78,12 +77,9 @@ class AutoCompleteHashData {
 /// If the hash key is found in the [_indexHash] map, it assigns the hash key to
 /// the substring in the [_substringHash] map.
 ///
-/// The [_findHashKey] method is a static private method that finds the hash key
-/// for a given index list from a substring in the `hashTable`.
-/// It iterates over the entries of the `hashTable` and compares the index list
-/// values with the given index list from the substring.
-/// If a match is found, it returns the hash key. If no match is found,
-/// it returns -1.
+/// The [_lookupKeyFor] method is a static private method that builds the key
+/// used to recognize an index list that has already been given a bucket in
+/// [_indexHash].
 ///
 //// *Cspell:disable
 /// Example usage:
@@ -103,9 +99,8 @@ class AutoCompleteHashData {
 /// );
 /// ```
 ///
-/// Note: This class requires the 'collection' package for the [ListEquality]
-/// class and the 'usda_db_creation' package for the [DBParser], [DataStructure],
-/// and [FileService] classes.
+/// Note: This class requires the 'usda_db_creation' package for the [DBParser],
+/// [DataStructure], and [FileService] classes.
 /// Make sure to import these packages before using this class.
 ///
 /// See Also:
@@ -163,40 +158,30 @@ class AutoCompleteHashTable implements DataStructure<AutoCompleteHashData?> {
   /// _indexHash = { 0: [3, 4], 1: [1, 2, 3, 4], ...  }
   /// /* Cspell: enable*/
   void _populateHashes() {
+    final hashKeysByIndexList = <String, int>{};
     var count = 0;
 
     for (final element in unHashedSubstrings.entries) {
       final indexListValue = element.value;
-      final hashKey = _findHashKey(
-        indexListFromSubstring: indexListValue,
-        hashTable: _indexHash,
-      );
+      final lookupKey = _lookupKeyFor(indexListValue);
+      final hashKey = hashKeysByIndexList[lookupKey];
 
-      if (hashKey == -1) {
+      if (hashKey == null) {
         _indexHash[count] = indexListValue;
+        hashKeysByIndexList[lookupKey] = count;
         _substringHash[element.key] = count;
         count++;
-      }
-
-      if (hashKey >= 0) {
+      } else {
         _substringHash[element.key] = hashKey;
       }
     }
   }
 
-  /// Finds the hash key for the given [indexListFromSubstring] and [hashTable].
-  static int _findHashKey({
-    required List<int> indexListFromSubstring,
-    required Map<int, List<int>> hashTable,
-  }) {
-    for (final element in hashTable.entries) {
-      final hashKey = element.key;
-
-      const listEquals = ListEquality<int>();
-      if (listEquals.equals(element.value, indexListFromSubstring)) {
-        return hashKey;
-      }
-    }
-    return -1;
-  }
+  /// Builds the [_indexHash] lookup key for [indexList].
+  ///
+  /// Two substrings share an [_indexHash] bucket only when their index lists
+  /// are equal element for element and in the same order, so joining the list
+  /// is enough to identify a bucket, and lets an existing bucket be found by
+  /// lookup instead of by comparing against every bucket already created.
+  static String _lookupKeyFor(List<int> indexList) => indexList.join(',');
 }
