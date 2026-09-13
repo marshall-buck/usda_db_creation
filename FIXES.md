@@ -21,10 +21,7 @@ into `log()` and returns normally, so a failed or partial write reports success;
 pairs `?.` with a non-null cast, yielding a confusing cast error instead of a
 real message. The field is never null after `init`.
 
-🔴 `lib/description_parser.dart:166` — phrase removal leaves orphaned whitespace
-and commas behind (`"…green anjou "`), with no normalization pass.
-
-🔴 `lib/db_parser.dart:133` — `nutrient.id != 9999` is dead; `_findNutrient(9999)`
+✅ `lib/db_parser.dart:133` — `nutrient.id != 9999` is dead; `_findNutrient(9999)`
 already `continue`d above. The `9999` sentinel is a magic number with no purpose.
 
 🔴 `lib/db_parser.dart:121` — `originalNutrientTableEdit[id]!['unit']!` plus a

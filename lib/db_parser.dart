@@ -129,8 +129,8 @@ class DBParser {
       final originalNutrient = listOfNutrients[i] as Map<String, dynamic>;
       final nutrientJson = originalNutrient['nutrient'] as Map<String, dynamic>;
 
-      final nutrientId = (nutrientJson['id'] as int?) ?? 9999;
-      if (!_findNutrient(nutrientId)) continue;
+      final nutrientId = nutrientJson['id'] as int?;
+      if (nutrientId == null || !_findNutrient(nutrientId)) continue;
 
       final unit = nutrientJson['unitName'] as String;
       final originalNutrientUnit = Nutrient.originalNutrientTableEdit[nutrientId]!['unit']!;
@@ -145,7 +145,7 @@ class DBParser {
         amount: amount,
       );
 
-      if (nutrient.amount > 0 && nutrient.id != 9999) {
+      if (nutrient.amount > 0) {
         nutrientsMap[nutrient.id.toString()] = nutrient.amount;
       }
     }

@@ -1,4 +1,12 @@
 /// Phrases stripped from a food description before it is indexed.
+///
+/// Removal is a plain `replaceAll` with no normalization pass afterwards, so
+/// each phrase carries its own delimiter, the way the commented out entries
+/// below carry their trailing `, `. The one live phrase is always terminal in
+/// the source data, so removing it leaves a single trailing space on those
+/// descriptions. That is left alone on purpose: descriptions are display
+/// strings, the word index splits on whitespace so the empty token never
+/// reaches it, and the trailing space is part of the already published output.
 const unwantedPhrases = [
   "(Includes foods for USDA's Food Distribution Program)",
   // "separable lean and fat, ",
