@@ -30,9 +30,10 @@ already `continue`d above. The `9999` sentinel is a magic number with no purpose
 `109-128`) are near-identical copies; the whole thing collapses to
 `writeFile: extras`.
 
-🔴 `bin/usda_db_creation.dart:29-30` — `getLongestDescription` and
-`getShortestDescription` each re-parse the full 210 MB foods list, so the CLI
-does the parse three times.
+✅ `bin/usda_db_creation.dart:29-30` — `getLongestDescription` and
+`getShortestDescription` each rebuilt the description records from the foods
+list, so the CLI built them three times. (The 210 MB JSON itself is only
+decoded once, in `DBParser.init`.)
 
 🔴 `lib/data_structure.dart:10` — the interface takes a whole `DBParser` only to
 reach `.fileService`. `FileService` is the actual dependency.

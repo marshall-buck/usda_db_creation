@@ -26,8 +26,18 @@ void main() async {
     extras: true,
   );
 
-  print(runner.getLongestDescription(dbParser: dbParser));
-  print(runner.getShortestDescription(dbParser: dbParser));
+  // `runner.getLongestDescription` and `runner.getShortestDescription` each
+  // rebuild the description records from the foods list. Building them once
+  // here and calling the two helpers directly does the same walk one time.
+  final descriptions = DescriptionParser.createOriginalDescriptionRecords(
+    originalFoodsList: dbParser.originalFoodsList,
+  );
+  print(
+    DescriptionParser.getLongestDescriptionRecord(descriptions: descriptions),
+  );
+  print(
+    DescriptionParser.getShortestDescriptionRecord(descriptions: descriptions),
+  );
   final endTime = DateTime.now();
   final duration = endTime.difference(startTime);
   print('Time taken: ${duration.inMilliseconds} milliseconds');
