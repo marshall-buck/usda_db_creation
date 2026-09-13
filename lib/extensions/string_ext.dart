@@ -60,6 +60,14 @@ extension StringExtensions on String {
 
   /// Checks if a [String] contains either digits followed by a %,
   /// 'or' a string of lowercase characters.
+  ///
+  /// A token carrying a digit any other way is rejected on purpose. A
+  /// percentage like `2%` or `100%` is something a user searches for, a bare
+  /// number is not, and bare numbers are all this rejects in practice: words
+  /// are split on dashes and slashes before the check, so `b-12` arrives as `b`
+  /// and `12` rather than as `b12`, and the 36 digit-bearing tokens it drops
+  /// across the whole database are fragments like `1`, `0`, `8` and `12` left
+  /// over from `1% milkfat` or `80% lean`.
   bool isLowerCaseOrNumberWithPercent() {
     final lowerCaseRegex = RegExp(r'^[a-z]+$');
     final numberWithPercentRegex = RegExp(r'^\d+%$');

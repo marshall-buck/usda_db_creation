@@ -36,30 +36,10 @@ class Nutrient extends Equatable {
   /// Converts an entry to be encoded to Json
   MapEntry<String, num> toJson() => MapEntry(id.toString(), amount);
 
-  /// Given the string form a csv file, iterate and create the nutrient info map
+  /// The 93 nutrient ids written to the database; every other id is discarded.
   ///
-  /// Returns:{ {"1004" : {"name": "Total Fat", "unit": "g"}, ...}
-
-  // static Map<String, dynamic> createNutrientInfoMap(
-  //     {required List<List<String>> csvLines}) {
-  //   final Map<String, dynamic> nutrientsMap = {};
-
-  //   for (int i = 1; i < csvLines.length; i++) {
-  //     final line = csvLines[i];
-
-  //     final key = line[0];
-  //     if (!nutrientIds.contains(int.parse(key))) {
-  //       continue;
-  //     }
-  //     final name = line[1];
-  //     final unit = line[2].toLowerCase();
-
-  //     nutrientsMap[key] = {"name": name, "unit": unit};
-  //   }
-
-  //   return nutrientsMap;
-  // }
-
+  /// A curated subset of `nutrientIds` in `global_const.dart`, which lists all
+  /// 149 ids the source contains.
   static const keepTheseNutrients = [
     1003,
     1004,
@@ -157,7 +137,7 @@ class Nutrient extends Equatable {
   ];
 /*CSpell:disable*/
   /// Some names have been changed to be more user friendly.
-  /// Not used anywehrer just here for reference.
+  /// Used in db_parser.dart
   static const originalNutrientTableEdit = {
     1003: {'name': 'Protein', 'unit': 'g'},
     1004: {'name': 'Total Fat', 'unit': 'g'},

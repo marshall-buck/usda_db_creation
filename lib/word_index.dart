@@ -92,6 +92,12 @@ class WordIndexMap implements DataStructure<SplayTreeMap<String, List<int>>?> {
     }
 
     // Convert Set values to List's
+    //
+    // The lists are not sorted here, unlike the ones in `substrings.dart`, and
+    // that costs nothing. Descriptions are walked in insertion order, so every
+    // list already comes out ascending, and the order is not load bearing:
+    // consumers look a word up by key, and `substrings.dart` sorts before the
+    // hash buckets are keyed, so nothing downstream can see this ordering.
     final convertedMap = SplayTreeMap<String, List<int>>();
     indexMap.forEach((key, value) {
       convertedMap[key] = value.toList();

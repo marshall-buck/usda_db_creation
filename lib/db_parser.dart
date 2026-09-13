@@ -127,6 +127,12 @@ class DBParser {
   /// with the table would put a number in the database under the wrong unit,
   /// and mg against g is a 1000x error. Aborting the run beats publishing a
   /// database that is quietly wrong.
+  ///
+  /// Nutrients with an amount of zero are left out on purpose, so an absent key
+  /// means "no meaningful amount" rather than "not measured". The source always
+  /// supplies an `amount`, and 3,387 of the kept rows are an explicit zero, so
+  /// dropping them keeps the published db smaller and the consumer treats a
+  /// missing key as zero either way.
   Map<String, num> createNutrientsMap({
     required List<dynamic> listOfNutrients,
   }) {
@@ -176,9 +182,16 @@ class DBParser {
     return Nutrient.keepTheseNutrients.contains(nutrientId);
   }
 
-  /// Creates a set of id's from the nutrients in hte original database.
-  /// This is used to create the `nutrientIds] property
+  /// Creates a set of id's from the nutrients in the original database.
+  /// This is used to create the `nutrientIds` property
   /// in the 'global_const.dart' file.
+  ///
+  /// Informational, and uncalled on purpose. It was run once to discover which
+  /// nutrient ids the source actually contains, and it is kept so the list can
+  /// be regenerated against a newer USDA download. Call it from a scratch
+  /// `main` when that is needed; nothing in the pipeline should depend on it.
+  ///
+  /// See also [getFoodCategories], the other standalone research method.
   static Set<int> findAllNutrientIds({
     required Map<int, String> finalDescriptionRecordsMap,
     required List<dynamic> originalFoodsList,

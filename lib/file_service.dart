@@ -16,7 +16,6 @@ import 'package:usda_db_creation/extensions/map_ext.dart';
 /// - [fileNameNutrientsCsv] The file name for the nutrient CSV file.
 /// - [fileNameNutrientsMap] The file name for the original nutrient CSV file.
 /// - [fileNameDuplicatePhrases] The file name for the duplicate phrases file.
-/// - [fileNameOriginalDescriptions] The file name for the original descriptions file.
 /// - [fileNameFinalDescriptions] The file name for the final descriptions file.
 /// - [fileNameSubstrings] The file name for the substrings file.
 /// - [fileNameAutocompleteWordIndex] The file name for the autocomplete word index file.
@@ -59,9 +58,6 @@ class FileService {
 
   /// The file name for the duplicate phrases file.
   static const fileNameDuplicatePhrases = 'duplicate_phrases';
-
-  /// The file name for the original descriptions file.
-  static const fileNameOriginalDescriptions = 'original_descriptions.txt';
 
   /// The file name for the final descriptions file.
   static const fileNameFinalDescriptions = 'descriptions';

@@ -74,6 +74,15 @@ class Substrings implements DataStructure<Map<String, List<int>>?> {
       for (var i = 0; i < word.length; i++) {
         // If the word is a number followed by a % or just a number,
         //add it to the indexMap directly, and skip the iteration.
+        //
+        // Searching for a fragment of a number is not useful, so numbers are
+        // indexed whole instead of being broken into substrings.
+        //
+        // The check only depends on `word`, so it repeats once per character,
+        // but the values are sets and the added list is the same every pass, so
+        // the repeats change nothing and cost 80 set inserts across the whole
+        // database. Keeping it inside the loop is also what guarantees a word is
+        // only added when it has at least one character.
         if (word.isNumberWithPercent() || word.isNumber()) {
           if (!indexMap.containsKey(word)) {
             indexMap[word] = <int>{};
