@@ -17,7 +17,7 @@ O(n).
 into `log()` and returns normally, so a failed or partial write reports success;
 `dart:developer.log` is also invisible in a plain CLI run.
 
-🔴 `lib/db_parser.dart:63` — `_originalDBMap?['SRLegacyFoods'] as List<dynamic>`
+✅ `lib/db_parser.dart:63` — `_originalDBMap?['SRLegacyFoods'] as List<dynamic>`
 pairs `?.` with a non-null cast, yielding a confusing cast error instead of a
 real message. The field is never null after `init`.
 

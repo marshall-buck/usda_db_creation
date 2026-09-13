@@ -57,10 +57,25 @@ class DBParser {
 
   /// The service used to read the source file and write the generated files.
   FileService fileService;
-  Map<dynamic, dynamic>? _originalDBMap;
+
+  /// Always assigned by [DBParser.init], so it is never null once an instance
+  /// exists.
+  late final Map<dynamic, dynamic> _originalDBMap;
 
   /// [List] of foods from `original_usda.json`.
-  List<dynamic> get originalFoodsList => _originalDBMap?['SRLegacyFoods'] as List<dynamic>;
+  ///
+  /// Throws a [FormatException] if the source file has no `SRLegacyFoods` list,
+  /// rather than failing with a bare cast error.
+  List<dynamic> get originalFoodsList {
+    final foods = _originalDBMap['SRLegacyFoods'];
+    if (foods is! List) {
+      throw FormatException(
+        "Expected a 'SRLegacyFoods' list in the source file, "
+        'found ${foods.runtimeType}',
+      );
+    }
+    return foods;
+  }
 
   /// Method to create the map that wil be used for the foods database.
   /// Returns:
