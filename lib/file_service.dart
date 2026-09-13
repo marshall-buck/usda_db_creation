@@ -105,45 +105,37 @@ class FileService {
       throw ArgumentError('No contents provided: writeFileByType');
     }
 
-    try {
-      checkAndCreateFolder();
+    checkAndCreateFolder();
 
-      if (listContents != null && listContents is List) {
-        final listFilePath = p.join(
-          pathToFiles,
-          folderHash,
-          '${fileHash}_$fileName.txt',
-        ); // '$pathToFiles/$fileHash/$fileName.txt';
-        await _writeListToTxtFile(
-          filePath: listFilePath,
-          contents: listContents,
-        );
-      }
+    if (listContents != null && listContents is List) {
+      final listFilePath = p.join(
+        pathToFiles,
+        folderHash,
+        '${fileHash}_$fileName.txt',
+      ); // '$pathToFiles/$fileHash/$fileName.txt';
+      await _writeListToTxtFile(
+        filePath: listFilePath,
+        contents: listContents,
+      );
+    }
 
-      if (mapContents != null && mapContents is Map) {
-        final mapFilePath = p.join(
-          pathToFiles,
-          folderHash,
-          '${fileHash}_$fileName.json',
-        ); //'$pathToFiles/$fileHash/$fileName.json';
-        final convertedMap = convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
-        await _writeJsonFile(filePath: mapFilePath, contents: convertedMap);
-      }
-    } on Exception catch (e, st) {
-      log(e.toString(), stackTrace: st, name: 'writeFileByType');
+    if (mapContents != null && mapContents is Map) {
+      final mapFilePath = p.join(
+        pathToFiles,
+        folderHash,
+        '${fileHash}_$fileName.json',
+      ); //'$pathToFiles/$fileHash/$fileName.json';
+      final convertedMap = convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
+      await _writeJsonFile(filePath: mapFilePath, contents: convertedMap);
     }
   }
 
   /// Writes the manifest file, whose contents are the current [fileHash].
   Future<void> writeManifestFile() async {
     final manifestFilePath = p.join(pathToFiles, folderHash);
-    try {
-      final file = File('$manifestFilePath/$fileNameManifest.txt');
-      log('Writing manifest file to: $manifestFilePath', name: 'writeManifestFile');
-      await file.writeAsString(fileHash);
-    } on Exception catch (e, st) {
-      log(e.toString(), stackTrace: st, name: 'writeStringToTxtFile');
-    }
+    final file = File('$manifestFilePath/$fileNameManifest.txt');
+    log('Writing manifest file to: $manifestFilePath', name: 'writeManifestFile');
+    await file.writeAsString(fileHash);
   }
 
   Future<void> _writeJsonFile({
@@ -151,17 +143,13 @@ class FileService {
     required Map<dynamic, dynamic> contents,
     bool convertKeysToStrings = false,
   }) async {
-    try {
-      Map<dynamic, dynamic> mapToWrite;
-      if (convertKeysToStrings) {
-        mapToWrite = contents.map((key, value) => MapEntry(key.toString(), value));
-      } else {
-        mapToWrite = contents;
-      }
-      await File(filePath).writeAsString(jsonEncode(mapToWrite));
-    } on Exception catch (e, st) {
-      log(e.toString(), stackTrace: st, name: 'writeJsonFile');
+    Map<dynamic, dynamic> mapToWrite;
+    if (convertKeysToStrings) {
+      mapToWrite = contents.map((key, value) => MapEntry(key.toString(), value));
+    } else {
+      mapToWrite = contents;
     }
+    await File(filePath).writeAsString(jsonEncode(mapToWrite));
   }
 
   /// Takes a [List], and writes a file to given [filePath], creating a new
@@ -170,11 +158,9 @@ class FileService {
     required String filePath,
     required List<dynamic> contents,
   }) async {
+    final sink = File(filePath).openWrite();
+
     try {
-      final file = File(filePath);
-
-      final sink = file.openWrite();
-
       // Write the lines, if line is the last line, don't add \n
       for (var i = 0; i < contents.length; i++) {
         final line = contents[i];
@@ -186,9 +172,9 @@ class FileService {
       }
 
       await sink.flush();
+    } finally {
+      // Close in a finally so a failed write does not leak the handle.
       await sink.close();
-    } on Exception catch (e, st) {
-      log(e.toString(), stackTrace: st, name: 'writeListToTxtFile');
     }
   }
 

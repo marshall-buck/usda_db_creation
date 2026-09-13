@@ -13,7 +13,7 @@ O(n).
 ✅ `lib/file_service.dart:213` — `loadData` calls `readAsStringSync` *before*
 `existsSync`, so the `FileSystemException('File not found')` is unreachable.
 
-🔴 `lib/file_service.dart:132,144,162,190` — every writer swallows its exception
+✅ `lib/file_service.dart:132,144,162,190` — every writer swallows its exception
 into `log()` and returns normally, so a failed or partial write reports success;
 `dart:developer.log` is also invisible in a plain CLI run.
 
