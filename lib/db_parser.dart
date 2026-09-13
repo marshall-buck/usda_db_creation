@@ -17,9 +17,32 @@ class DB implements DataStructure<Map<String, dynamic>?> {
   /// The parsed descriptions, keyed by food id.
   final Map<int, String> descriptionMap;
 
-  /// Creates the database data structure and writes it to a file,
-  /// if [writeFile] is true.
-  /// Returns the data structure if [returnData] is true.
+  /// Creates the foods database and, by default, writes it to a file.
+  ///
+  /// `dbParser` - the parser holding the decoded `original_usda.json`.
+  ///
+  /// `writeFile` - write the result to [FileService.fileNameFoodsDatabase].
+  /// Defaults to `true`.
+  ///
+  /// `returnData` - return the built map instead of `null`. Defaults to
+  /// `false`.
+  ///
+  /// Those defaults are deliberately the inverse of the [DataStructure]
+  /// interface, and of the other implementations, which all default to
+  /// `returnData: true, writeFile: false`. Those structures are intermediate:
+  /// the descriptions feed the word index, the word index feeds the
+  /// substrings, the substrings feed the autocomplete hash, so their callers
+  /// want the value back and only sometimes want it on disk. This one is the
+  /// end of the pipeline. Nothing consumes the foods map, and it is the
+  /// largest structure the run produces, so the useful default is to write it
+  /// and hand back nothing. That is why both call sites in
+  /// `usda_db.dart.createDBFiles` are simply
+  /// `db.createDataStructure(dbParser: dbParser)`.
+  ///
+  /// There is also no `!returnData && !writeFile` guard here, unlike
+  /// `DescriptionParser`, `WordIndexMap` and `Substrings`. With these defaults
+  /// that combination cannot be reached by accident - a caller has to pass
+  /// both flags explicitly to ask for no work at all.
   @override
   Future<Map<String, dynamic>?> createDataStructure({
     required DBParser dbParser,

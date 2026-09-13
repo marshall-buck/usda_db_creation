@@ -84,47 +84,32 @@ Future<void> createDBFiles({
   required FileService fileService,
   bool extras = false,
 }) async {
-  if (extras) {
-    final descriptions = DescriptionParser();
+  // [extras] only decides whether the three intermediate structures are also
+  // written to disk. They are built and chained the same way either way, and
+  // the hash table and the database are always written.
+  final descriptions = DescriptionParser();
+  final desMap = await descriptions.createDataStructure(
+    dbParser: dbParser,
+    writeFile: extras,
+  );
 
-    final desMap = await descriptions.createDataStructure(
-      dbParser: dbParser,
-      writeFile: true,
-    );
-    final wordIndex = WordIndexMap(desMap!);
-    final wordIndexMap = await wordIndex.createDataStructure(
-      dbParser: dbParser,
-      writeFile: true,
-    );
-    final substring = Substrings(wordIndexMap!);
-    final substringMap = await substring.createDataStructure(
-      dbParser: dbParser,
-      writeFile: true,
-    );
-    final hashTable = AutoCompleteHashTable(substringMap!);
-    await hashTable.createDataStructure(dbParser: dbParser, writeFile: true);
+  final wordIndex = WordIndexMap(desMap!);
+  final wordIndexMap = await wordIndex.createDataStructure(
+    dbParser: dbParser,
+    writeFile: extras,
+  );
 
-    final db = DB(desMap);
-    await db.createDataStructure(dbParser: dbParser);
-  } else {
-    final descriptions = DescriptionParser();
+  final substring = Substrings(wordIndexMap!);
+  final substringMap = await substring.createDataStructure(
+    dbParser: dbParser,
+    writeFile: extras,
+  );
 
-    final desMap = await descriptions.createDataStructure(
-      dbParser: dbParser,
-    );
-    final wordIndex = WordIndexMap(desMap!);
-    final wordIndexMap = await wordIndex.createDataStructure(
-      dbParser: dbParser,
-    );
-    final substring = Substrings(wordIndexMap!);
-    final substringMap = await substring.createDataStructure(
-      dbParser: dbParser,
-    );
-    final hashTable = AutoCompleteHashTable(substringMap!);
-    await hashTable.createDataStructure(dbParser: dbParser, writeFile: true);
+  final hashTable = AutoCompleteHashTable(substringMap!);
+  await hashTable.createDataStructure(dbParser: dbParser, writeFile: true);
 
-    final db = DB(desMap);
-    await db.createDataStructure(dbParser: dbParser);
-  }
+  final db = DB(desMap);
+  await db.createDataStructure(dbParser: dbParser);
+
   await fileService.writeManifestFile();
 }

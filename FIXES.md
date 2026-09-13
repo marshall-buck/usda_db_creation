@@ -24,17 +24,9 @@ real message. The field is never null after `init`.
 ✅ `lib/db_parser.dart:133` — `nutrient.id != 9999` is dead; `_findNutrient(9999)`
 already `continue`d above. The `9999` sentinel is a magic number with no purpose.wai
 
-🔴 `lib/word_index.dart:97` — emits unsorted index lists while
-`lib/substrings.dart:98` sorts, giving two output files inconsistent ordering.
-
 ## Design smells
 
-🔴 `lib/db_parser.dart:13` — `DB` overrides `createDataStructure` with *inverted*
-defaults (`returnData: false, writeFile: true`) versus the `DataStructure`
-interface, and `lib/usda_db.dart:108` silently depends on that. `DB` also skips
-the `!returnData && !writeFile` guard the other three implementations have.
-
-🔴 `lib/usda_db.dart:87-128` — the two `if (extras)` branches (`87-109` and
+✅ `lib/usda_db.dart:87-128` — the two `if (extras)` branches (`87-109` and
 `109-128`) are near-identical copies; the whole thing collapses to
 `writeFile: extras`.
 
