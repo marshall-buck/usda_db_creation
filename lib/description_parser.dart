@@ -192,6 +192,13 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
   /// Helper method to parse a description record from a line in a txt file.
   /// The line must be in the format of 1 (id, description) per line
   /// (167521, Pie Crust, Cookie-type, Chocolate, Ready Crust).
+  ///
+  /// The offsets are fixed on purpose. Every `fdcId` in the SR Legacy download
+  /// is 6 digits, and the file being read back was written by this package from
+  /// a [DescriptionRecord], so each line is always `(` + 6 digits + `, ` +
+  /// description + `)`. That makes the id positions 1-6 and the description
+  /// start position 9, and splitting on a comma is not an option since the
+  /// descriptions themselves contain commas.
   static MapEntry<int, String> _parseDescriptionRecordFromString(
     String line,
   ) {
