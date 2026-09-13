@@ -17,7 +17,7 @@ void main() {
     group('createAutocompleteHashTable() - ', () {
       test('hashes list correctly', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);

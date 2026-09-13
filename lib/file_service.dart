@@ -82,17 +82,28 @@ class FileService {
   /// The file name for the file manifest file.
   static const fileNameManifest = 'file_manifest';
 
-  /// Loads a DateTime sting at initialization so all
-  /// Prefixes wil be the same.
-  String folderHash = '${DateTime.now()}'.replaceAll(RegExp(r'[\\/:*?"<>|\s]'), '_');
+  /// The folder every file of this run is written into.
+  ///
+  /// `DateTime.now().toString()` with the characters a path cannot hold
+  /// replaced by `_`, so it reads `2024-10-21_20_05_15.765190`. Set once when
+  /// the instance is built so every file of a run lands together, and it is a
+  /// timestamp rather than a hash - two runs in the same microsecond would
+  /// collide.
+  String outputFolderName = '${DateTime.now()}'.replaceAll(RegExp(r'[\\/:*?"<>|\s]'), '_');
 
-  /// The portion of [folderHash] used to prefix each written file name.
-  String get fileHash => folderHash.substring(folderHash.indexOf('.') + 1);
+  /// The sub-second part of [outputFolderName], used to prefix each file name.
+  ///
+  /// `765190` for the folder above. `DateTime.toString` prints six digits when
+  /// there are microseconds and three when there are not, so this is `765` on a
+  /// whole-microsecond tick and `000` on a whole-second one. That is fine: the
+  /// prefix only has to be the same for every file in one folder, and
+  /// [writeManifestFile] records it so a reader can rebuild the names.
+  String get filePrefix => outputFolderName.substring(outputFolderName.indexOf('.') + 1);
 
 // ************************** File Writers **************************
 
   /// Writes the contents to files based on their types.
-  /// Appends a [folderHash] folder to the path.
+  /// Appends a [outputFolderName] folder to the path.
   Future<void> writeFileByType({
     required String fileName,
     required bool convertKeysToStrings,
@@ -108,9 +119,9 @@ class FileService {
     if (listContents != null) {
       final listFilePath = p.join(
         pathToFiles,
-        folderHash,
-        '${fileHash}_$fileName.txt',
-      ); // '$pathToFiles/$fileHash/$fileName.txt';
+        outputFolderName,
+        '${filePrefix}_$fileName.txt',
+      ); // '$pathToFiles/$filePrefix/$fileName.txt';
       await _writeListToTxtFile(
         filePath: listFilePath,
         contents: listContents,
@@ -120,21 +131,21 @@ class FileService {
     if (mapContents != null) {
       final mapFilePath = p.join(
         pathToFiles,
-        folderHash,
-        '${fileHash}_$fileName.json',
-      ); //'$pathToFiles/$fileHash/$fileName.json';
+        outputFolderName,
+        '${filePrefix}_$fileName.json',
+      ); //'$pathToFiles/$filePrefix/$fileName.json';
       final convertedMap =
           convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
       await _writeJsonFile(filePath: mapFilePath, contents: convertedMap);
     }
   }
 
-  /// Writes the manifest file, whose contents are the current [fileHash].
+  /// Writes the manifest file, whose contents are the current [filePrefix].
   Future<void> writeManifestFile() async {
-    final manifestFilePath = p.join(pathToFiles, folderHash);
+    final manifestFilePath = p.join(pathToFiles, outputFolderName);
     final file = File('$manifestFilePath/$fileNameManifest.txt');
     log('Writing manifest file to: $manifestFilePath', name: 'writeManifestFile');
-    await file.writeAsString(fileHash);
+    await file.writeAsString(filePrefix);
   }
 
   Future<void> _writeJsonFile({
@@ -179,7 +190,7 @@ class FileService {
 
   /// Checks if the specified folder path exists and creates it if it doesn't.
   void checkAndCreateFolder() {
-    final path = p.join(pathToFiles, folderHash);
+    final path = p.join(pathToFiles, outputFolderName);
     final directory = Directory(path);
     if (!directory.existsSync()) {
       try {

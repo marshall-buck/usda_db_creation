@@ -11,7 +11,7 @@ late final FileService fileService;
 void main() {
   setUpAll(() => fileService = FileService());
   tearDown(() async {
-    final testDirectory = Directory(p.join(fileService.pathToFiles, fileService.folderHash));
+    final testDirectory = Directory(p.join(fileService.pathToFiles, fileService.outputFolderName));
     if (testDirectory.existsSync()) {
       await testDirectory.delete(recursive: true);
     }
@@ -28,9 +28,9 @@ void main() {
           listContents: listContents,
         );
 
-        final fileName = '${fileService.fileHash}_testList.txt';
+        final fileName = '${fileService.filePrefix}_testList.txt';
 
-        final filePath = p.join(fileService.pathToFiles, fileService.folderHash, fileName);
+        final filePath = p.join(fileService.pathToFiles, fileService.outputFolderName, fileName);
         final file = File(filePath);
 
         expect(file.existsSync(), isTrue);
@@ -45,9 +45,9 @@ void main() {
           convertKeysToStrings: false,
           mapContents: mapContents,
         );
-        final fileName = '${fileService.fileHash}_testJson.json';
+        final fileName = '${fileService.filePrefix}_testJson.json';
 
-        final filePath = p.join(fileService.pathToFiles, fileService.folderHash, fileName);
+        final filePath = p.join(fileService.pathToFiles, fileService.outputFolderName, fileName);
         final file = File(filePath);
 
         expect(file.existsSync(), isTrue);
@@ -138,7 +138,7 @@ void main() {
 
     group('checkAndCreateFolder method tests', () {
       test('should create folder if it does not exist', () {
-        final folderPath = p.join(fileService.pathToFiles, fileService.folderHash);
+        final folderPath = p.join(fileService.pathToFiles, fileService.outputFolderName);
 
         fileService.checkAndCreateFolder();
 
@@ -148,7 +148,7 @@ void main() {
       });
 
       test('should not create folder if it already exists', () {
-        final folderPath = p.join(fileService.pathToFiles, fileService.folderHash);
+        final folderPath = p.join(fileService.pathToFiles, fileService.outputFolderName);
         Directory(folderPath).createSync();
 
         fileService.checkAndCreateFolder();
@@ -158,30 +158,30 @@ void main() {
         Directory(folderPath).deleteSync();
       });
     });
-    group('fileHash tests', () {
-      test('fileHash should not be empty', () {
-        expect(fileService.folderHash, isNotEmpty);
+    group('outputFolderName tests', () {
+      test('outputFolderName should not be empty', () {
+        expect(fileService.outputFolderName, isNotEmpty);
       });
 
-      test('fileHash should not contain any invalid characters', () {
+      test('outputFolderName should not contain any invalid characters', () {
         expect(
-          fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')),
+          fileService.outputFolderName.contains(RegExp(r'[\\/:*?"<>|\s]')),
           false,
         );
       });
 
-      test('fileHash should not contain any invalid characters', () {
+      test('outputFolderName should not contain any invalid characters', () {
         expect(
-          fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')),
+          fileService.outputFolderName.contains(RegExp(r'[\\/:*?"<>|\s]')),
           isFalse,
         );
       });
 
-      test('fileHash should be unique for each instance of FileService', () {
+      test('outputFolderName should be unique for each instance of FileService', () {
         final anotherFileService = FileService();
         expect(
-          fileService.folderHash,
-          isNot(equals(anotherFileService.folderHash)),
+          fileService.outputFolderName,
+          isNot(equals(anotherFileService.outputFolderName)),
         );
       });
     });

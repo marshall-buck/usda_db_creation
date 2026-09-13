@@ -16,7 +16,7 @@ void main() {
     group('createDataStructure()', () {
       test('substrings populates correctly', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
@@ -30,7 +30,7 @@ void main() {
       });
       test('fileLoader writeFileByType is called when writeFile is true', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
@@ -62,7 +62,7 @@ void main() {
       });
       test('fileLoader methods are not called when writeFile is false', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
@@ -92,7 +92,7 @@ void main() {
       });
       test('Throws ArgumentError', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);

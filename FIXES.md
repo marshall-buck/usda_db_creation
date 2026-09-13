@@ -39,7 +39,7 @@ decoded once, in `DBParser.init`.)
 the method does `is List` / `is Map` at runtime anyway, and callers write
 `<Null, Map<…>>` noise.
 
-🔴 `lib/file_service.dart:89-92` — `folderHash`/`fileHash` is really
+✅ `lib/file_service.dart:89-92` — `folderHash`/`fileHash` is really
 `DateTime.now()` microseconds sliced at the first `.`; it degenerates to `"000"`
 when microseconds are zero, and `writeManifestFile` stores only that. "Hash" is
 a misleading name.

@@ -45,7 +45,7 @@ void main() {
         };
 
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(mockDescriptionMap);
@@ -57,7 +57,7 @@ void main() {
       });
       test('createDataStructure should handle empty description map', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final descriptionMap = <int, String>{};
@@ -77,7 +77,7 @@ void main() {
           171686: 'orange being is a citrus fruit',
         };
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(descriptionMap);
@@ -100,7 +100,7 @@ void main() {
         };
 
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(descriptionMap);
@@ -124,7 +124,7 @@ void main() {
           171686: 'orange being is a citrus/fruit 100%',
         };
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
@@ -162,7 +162,7 @@ void main() {
           171686: 'orange being is a citrus/fruit 100%',
         };
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
@@ -198,7 +198,7 @@ void main() {
           171686: 'orange being is a citrus/fruit 100%',
         };
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
+        when(() => mockFileLoaderService.outputFolderName)
             .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
