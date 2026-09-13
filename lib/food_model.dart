@@ -9,8 +9,8 @@ class FoodModel extends Equatable {
     required this.nutrientsMap,
   });
 
-  /// The USDA food id.
-  final dynamic id;
+  /// The USDA food id, the `fdcId` of the source record.
+  final int id;
 
   /// The parsed food description.
   final String description;
@@ -19,12 +19,17 @@ class FoodModel extends Equatable {
   final Map<String, num> nutrientsMap;
 
   /// Serializes this food as `{'<id>': {description, nutrients}}`.
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() => {id.toString(): toJsonValue()};
+
+  /// The value half of [toJson], `{description, nutrients}`.
+  ///
+  /// The database is one big map keyed by id, so a caller building it already
+  /// has the key and only needs this. Going through [toJson] there would
+  /// allocate a single-entry map per food just to merge it away again.
+  Map<String, dynamic> toJsonValue() {
     return {
-      id.toString(): {
-        'description': description,
-        'nutrients': nutrientsMap,
-      },
+      'description': description,
+      'nutrients': nutrientsMap,
     };
   }
 

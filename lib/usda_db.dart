@@ -37,7 +37,7 @@ import 'package:usda_db_creation/word_index.dart';
 /// Returns the length of the shortest description.
 ///
 /// [dbParser] The [DBParser] object containing the original foods list.
-(num, DescriptionRecord?) getShortestDescription({
+(int, DescriptionRecord?) getShortestDescription({
   required DBParser dbParser,
 }) {
   final descriptions = DescriptionParser.createOriginalDescriptionRecords(

@@ -47,14 +47,15 @@ a misleading name.
 ✅ `lib/file_service.dart:144` — `_writeJsonFile`'s `convertKeysToStrings` param
 is never passed and duplicates the deep conversion the caller already did.
 
-🔴 `lib/description_parser.dart:104` and `:185` — both build a `MapEntry` purely
-to immediately destructure it. `putIfAbsent` would likewise replace the
+✅ `lib/description_parser.dart:104` built a `MapEntry` purely to destructure it,
+and `_parseDescriptionRecordFromString` (`:202`) returned a `MapEntry` where the
+rest of the file uses `DescriptionRecord`. `putIfAbsent` likewise replaced the
 side-effecting ternary at `lib/word_index.dart:88`.
 
-🔴 `lib/food_model.dart:13` — `id` is `dynamic` though always an `int`, and
+✅ `lib/food_model.dart:13` — `id` is `dynamic` though always an `int`, and
 `toJson` allocates a one-entry map per food just for `addAll`.
 
-🔴 `lib/description_parser.dart:212` / `:230` — `getLongestDescriptionRecord`
+✅ `lib/description_parser.dart:212` / `:230` — `getLongestDescriptionRecord`
 returns `(int, …)` while `getShortestDescriptionRecord` returns `(num, …)` for
 the same shape of answer.
 
@@ -62,5 +63,3 @@ the same shape of answer.
 
 ✅ `.gitignore` — lines 1–33 and 35–65 are the same block twice, and
 `original_usda.json` (line 33) is subsumed by `lib/db` (line 63).
-
-<!-- TODO: look for unused consts in file service -->

@@ -128,9 +128,7 @@ class DBParser {
         nutrientsMap: nutrientsList,
       );
 
-      final foodModelJson = foodModel.toJson();
-
-      foodsMap.addAll(foodModelJson);
+      foodsMap[foodModel.id.toString()] = foodModel.toJsonValue();
     }
 
     return foodsMap;

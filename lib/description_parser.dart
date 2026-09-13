@@ -101,9 +101,7 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
     final descriptionMap = <int, String>{};
 
     for (final line in parsedDescriptions) {
-      final entry = MapEntry<int, String>(line.$1, line.$2);
-
-      descriptionMap[entry.key] = entry.value;
+      descriptionMap[line.$1] = line.$2;
     }
     if (writeFile) {
       await dbParser.fileService.writeFileByType(
@@ -182,9 +180,8 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
 
     final descriptionMap = <int, String>{};
     for (final line in lines) {
-      final entry = _parseDescriptionRecordFromString(line);
-
-      descriptionMap[entry.key] = entry.value;
+      final record = _parseDescriptionRecordFromString(line);
+      descriptionMap[record.$1] = record.$2;
     }
     return descriptionMap;
   }
@@ -199,13 +196,13 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
   /// description + `)`. That makes the id positions 1-6 and the description
   /// start position 9, and splitting on a comma is not an option since the
   /// descriptions themselves contain commas.
-  static MapEntry<int, String> _parseDescriptionRecordFromString(
+  static DescriptionRecord _parseDescriptionRecordFromString(
     String line,
   ) {
     final id = int.parse(line.substring(1, 7));
     final description = line.substring(9, line.length - 1);
 
-    return MapEntry(id, description);
+    return (id, description);
   }
 
   /// Helper Method to get the longest description in a list of [DescriptionRecord]s.
@@ -227,21 +224,24 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
   }
 
   /// Helper Method to get the shortest description in a list of [DescriptionRecord]s.
-  static (num, DescriptionRecord?) getShortestDescriptionRecord({
+  ///
+  /// Returns `(0, null)` for an empty list, matching
+  /// [getLongestDescriptionRecord].
+  static (int, DescriptionRecord?) getShortestDescriptionRecord({
     required List<DescriptionRecord> descriptions,
   }) {
     DescriptionRecord? shortestRecord;
-    num maxLength = double.infinity;
+    var minLength = 0;
 
     for (final currentRecord in descriptions) {
-      final num currentLength = currentRecord.$2.length;
-      if (currentLength < maxLength) {
-        maxLength = currentLength;
+      final currentLength = currentRecord.$2.length;
+      if (shortestRecord == null || currentLength < minLength) {
+        minLength = currentLength;
         shortestRecord = currentRecord;
       }
     }
 
-    return (maxLength, shortestRecord);
+    return (minLength, shortestRecord);
   }
 
   /// Helper method to create a frequency map of repeated phrases in a list of strings.

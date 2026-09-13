@@ -85,9 +85,7 @@ class WordIndexMap implements DataStructure<SplayTreeMap<String, List<int>>?> {
           } else if (!word.isNumberWithPercent() && word.length < 3) {
             continue;
           } else {
-            indexMap.containsKey(word)
-                ? indexMap[word]!.add(entry.key)
-                : indexMap[word] = {entry.key};
+            indexMap.putIfAbsent(word, () => <int>{}).add(entry.key);
           }
         }
       }
