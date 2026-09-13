@@ -44,7 +44,7 @@ the method does `is List` / `is Map` at runtime anyway, and callers write
 when microseconds are zero, and `writeManifestFile` stores only that. "Hash" is
 a misleading name.
 
-🔴 `lib/file_service.dart:144` — `_writeJsonFile`'s `convertKeysToStrings` param
+✅ `lib/file_service.dart:144` — `_writeJsonFile`'s `convertKeysToStrings` param
 is never passed and duplicates the deep conversion the caller already did.
 
 🔴 `lib/description_parser.dart:104` and `:185` — both build a `MapEntry` purely

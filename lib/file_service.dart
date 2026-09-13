@@ -148,18 +148,16 @@ class FileService {
     await file.writeAsString(filePrefix);
   }
 
+  /// Writes [contents] as JSON.
+  ///
+  /// Keys are written as they arrive. [writeFileByType] has already applied
+  /// `deepConvertMapKeyToString` when its `convertKeysToStrings` is set, and
+  /// that conversion is the deep one, so there is nothing left to do here.
   Future<void> _writeJsonFile({
     required String filePath,
     required Map<dynamic, dynamic> contents,
-    bool convertKeysToStrings = false,
   }) async {
-    Map<dynamic, dynamic> mapToWrite;
-    if (convertKeysToStrings) {
-      mapToWrite = contents.map((key, value) => MapEntry(key.toString(), value));
-    } else {
-      mapToWrite = contents;
-    }
-    await File(filePath).writeAsString(jsonEncode(mapToWrite));
+    await File(filePath).writeAsString(jsonEncode(contents));
   }
 
   /// Takes a [List], and writes a file to given [filePath], creating a new
