@@ -12,7 +12,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -34,7 +35,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -56,7 +58,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 0,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -78,7 +81,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -100,7 +104,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -122,7 +127,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -144,7 +150,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -166,7 +173,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 0,
     'foodNutrientDerivation': {
       'code': 'NR',
-      'description': 'Nutrient that is based on other nutrient/s; value used directly, ex. Nut.#204 from Nut.#298',
+      'description':
+          'Nutrient that is based on other nutrient/s; value used directly, ex. Nut.#204 from Nut.#298',
       'foodNutrientSource': {
         'id': 2,
         'code': '4',
@@ -188,7 +196,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -210,7 +219,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -232,7 +242,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -254,7 +265,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -276,7 +288,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -298,7 +311,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -320,7 +334,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -342,7 +357,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -364,7 +380,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',
@@ -386,7 +403,8 @@ const List<Map<String, Object>> mockFoodNutrients = [
     'dataPoints': 1,
     'foodNutrientDerivation': {
       'code': 'MC',
-      'description': 'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
+      'description':
+          'Manufacturer supplied; Calculated by manufacturer or unknown if analytical or calculated',
       'foodNutrientSource': {
         'id': 7,
         'code': '9',

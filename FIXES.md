@@ -35,10 +35,7 @@ already `continue`d above. The `9999` sentinel is a magic number with no purpose
 list, so the CLI built them three times. (The 210 MB JSON itself is only
 decoded once, in `DBParser.init`.)
 
-🔴 `lib/data_structure.dart:10` — the interface takes a whole `DBParser` only to
-reach `.fileService`. `FileService` is the actual dependency.
-
-🔴 `lib/file_service.dart:98` — `writeFileByType<T, U>` generics are decorative;
+✅ `lib/file_service.dart:98` — `writeFileByType<T, U>` generics are decorative;
 the method does `is List` / `is Map` at runtime anyway, and callers write
 `<Null, Map<…>>` noise.
 

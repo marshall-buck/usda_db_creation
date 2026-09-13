@@ -21,7 +21,8 @@ const mockFoodItem = FoodModel(
 );
 const Map<int, dynamic> mockFoodJson = {
   111111: {
-    'description': 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
+    'description':
+        'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
     'nutrients': {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10},
   },
 };
@@ -41,7 +42,10 @@ const mockDescriptionRecords = [
   (111111, 'George Weston Bakeries, Thomas English Muffins'),
   (111112, "Pears, raw, green anjou (Includes foods for USDA's Food Distribution Program)"),
   (111113, "Apples, raw, fuji, with skin (Includes foods for USDA's Food Distribution Program)"),
-  (111114, "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"),
+  (
+    111114,
+    "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"
+  ),
   (123456, 'The quick brown fox jumps over the lazy dog. '),
   (234567, 'In a distant galaxy, stars shimmered like diamonds.'),
   (345678, 'A mysterious melody echoed through the ancient forest.'),

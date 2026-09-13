@@ -185,7 +185,8 @@ void main() {
       test('String of less than to minLength returns correctly', () {
         // 'Quietly, an old oak stood, surrounded by natures.'
 
-        final res = 'George Weston Bakeries, Thomas English Muffins'.separateIntoPhrasesWithMinimumLength(
+        final res =
+            'George Weston Bakeries, Thomas English Muffins'.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 48,
         );
         const listEquals = ListEquality<String?>();
@@ -200,7 +201,8 @@ void main() {
           'a distant galaxy, stars shimmered like diamonds.',
           'distant galaxy, stars shimmered like diamonds.',
         ];
-        final res = 'In a distant galaxy, stars shimmered like diamonds.'.separateIntoPhrasesWithMinimumLength(
+        final res = 'In a distant galaxy, stars shimmered like diamonds.'
+            .separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 45,
         );
 

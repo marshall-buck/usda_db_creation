@@ -17,10 +17,12 @@ void main() {
     group('createDataStructure()', () {
       test('coverts list of descriptions records to map', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.folderHash)
+            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         const expected = {
-          167512: 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
+          167512:
+              'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
           167513: 'Pillsbury, Cinnamon Rolls with Icing, refrigerated dough',
           // excluded category
           // 167514:
@@ -35,7 +37,7 @@ void main() {
         const mapEquals = MapEquality<int, String>();
         expect(mapEquals.equals(expected, res), true);
         verifyNever(
-          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: 'descriptions',
             convertKeysToStrings: true,
             mapContents: any<Map<int, String>>(named: 'mapContents'),
@@ -46,10 +48,11 @@ void main() {
 
       test('fileLoader writeFileByType is called when writeFile is true', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.folderHash)
+            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
-          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: any<String>(
               named: 'fileName',
             ),
@@ -69,7 +72,7 @@ void main() {
         );
 
         verify(
-          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: 'descriptions',
             convertKeysToStrings: true,
             mapContents: any<Map<int, String>>(named: 'mapContents'),
@@ -79,10 +82,11 @@ void main() {
       });
       test('fileLoader methods are not called when writeFile is false', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.folderHash)
+            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
-          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: any<String>(
               named: 'fileName',
             ),
@@ -100,7 +104,7 @@ void main() {
         );
 
         verifyNever(
-          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: 'descriptions',
             convertKeysToStrings: true,
             mapContents: any<Map<int, String>>(named: 'mapContents'),
@@ -111,7 +115,8 @@ void main() {
 
       test('Throws ArgumentError', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.folderHash)
+            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final descriptions = DescriptionParser();
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         // await descriptions.createDataStructure(
@@ -134,7 +139,10 @@ void main() {
     group('createOriginalDescriptionRecords()', () {
       test('populates the correct records', () {
         const expectedResults = <DescriptionRecord>[
-          (167512, 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough'),
+          (
+            167512,
+            'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough'
+          ),
           (167513, 'Pillsbury, Cinnamon Rolls with Icing, refrigerated dough'),
           // Excluded category
           // (
@@ -165,7 +173,10 @@ void main() {
         const d = DeepCollectionEquality();
         const expected = (
           91,
-          (111114, "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)")
+          (
+            111114,
+            "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"
+          )
         );
         expect(d.equals(res, expected), true);
       });
@@ -184,10 +195,11 @@ void main() {
       });
       test('writeByType is called', () async {
         when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.folderHash)
+            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
-          () => mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
+          () => mockFileLoaderService.writeFileByType(
             fileName: any<String>(
               named: 'fileName',
             ),
@@ -204,7 +216,7 @@ void main() {
           dbParser: dbParser,
         );
         verify(
-          () => mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
+          () => mockFileLoaderService.writeFileByType(
             convertKeysToStrings: false,
             fileName: any<String>(
               named: 'fileName',
@@ -295,10 +307,12 @@ void main() {
 
   group('parseDescriptionsFromTxtFile()', () {
     test('coverts list of descriptions records to map', () {
-      when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockDescriptionTxtFile);
+      when(() => mockFileLoaderService.loadData(filePath: 'fake'))
+          .thenReturn(mockDescriptionTxtFile);
 
       const expected = {
-        167512: 'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
+        167512:
+            'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
         167513: 'Pillsbury, Cinnamon Rolls with Icing, 100% refrigerated dough',
         167514: 'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry, 2% milk',
       };

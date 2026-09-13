@@ -106,7 +106,7 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
       descriptionMap[entry.key] = entry.value;
     }
     if (writeFile) {
-      await dbParser.fileService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+      await dbParser.fileService.writeFileByType(
         fileName: FileService.fileNameFinalDescriptions, //fileNameFinalDescriptions,
         convertKeysToStrings: true,
         listContents: parsedDescriptions,
@@ -297,7 +297,7 @@ class DescriptionParser implements DataStructure<DescriptionMap?> {
     final outPut = Map<String, int>.fromEntries(sortedList);
 
     if (dbParser != null) {
-      await dbParser.fileService.writeFileByType<Null, Map<String, int>>(
+      await dbParser.fileService.writeFileByType(
         mapContents: outPut,
         fileName: FileService.fileNameDuplicatePhrases,
         convertKeysToStrings: false,

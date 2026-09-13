@@ -133,7 +133,7 @@ class AutoCompleteHashTable implements DataStructure<AutoCompleteHashData?> {
     );
 
     if (writeFile) {
-      await dbParser.fileService.writeFileByType<Null, Map<String, dynamic>>(
+      await dbParser.fileService.writeFileByType(
         fileName: FileService.fileNameAutocompleteHash,
         convertKeysToStrings: false,
         mapContents: data.toJson(),

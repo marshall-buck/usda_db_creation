@@ -85,7 +85,9 @@ class WordIndexMap implements DataStructure<SplayTreeMap<String, List<int>>?> {
           } else if (!word.isNumberWithPercent() && word.length < 3) {
             continue;
           } else {
-            indexMap.containsKey(word) ? indexMap[word]!.add(entry.key) : indexMap[word] = {entry.key};
+            indexMap.containsKey(word)
+                ? indexMap[word]!.add(entry.key)
+                : indexMap[word] = {entry.key};
           }
         }
       }
@@ -104,7 +106,7 @@ class WordIndexMap implements DataStructure<SplayTreeMap<String, List<int>>?> {
     });
 
     if (writeFile) {
-      await dbParser.fileService.writeFileByType<Null, SplayTreeMap<String, List<int>>>(
+      await dbParser.fileService.writeFileByType(
         fileName: FileService.fileNameAutocompleteWordIndex, // fileNameAutocompleteWordIndex,
         convertKeysToStrings: false,
         mapContents: convertedMap,

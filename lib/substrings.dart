@@ -107,7 +107,7 @@ class Substrings implements DataStructure<Map<String, List<int>>?> {
     final sortedMap = indexMap.map((key, value) => MapEntry(key, value.toList()..sort()));
 
     if (writeFile) {
-      await dbParser.fileService.writeFileByType<Null, Map<String, List<int>>>(
+      await dbParser.fileService.writeFileByType(
         fileName: FileService.fileNameSubstrings, // fileNameSubstrings,
         convertKeysToStrings: false,
         mapContents: sortedMap,

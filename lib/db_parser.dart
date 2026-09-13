@@ -57,7 +57,7 @@ class DB implements DataStructure<Map<String, dynamic>?> {
     );
 
     if (writeFile) {
-      await dbParser.fileService.writeFileByType<Null, Map<String, dynamic>>(
+      await dbParser.fileService.writeFileByType(
         fileName: FileService.fileNameFoodsDatabase,
         convertKeysToStrings: false,
         mapContents: data,
@@ -228,7 +228,8 @@ class DBParser {
       }
       final foodNutrients = foodItem['foodNutrients'] as List<dynamic>;
       for (final nutrient in foodNutrients) {
-        final nutrientJson = (nutrient as Map<dynamic, dynamic>)['nutrient'] as Map<dynamic, dynamic>;
+        final nutrientJson =
+            (nutrient as Map<dynamic, dynamic>)['nutrient'] as Map<dynamic, dynamic>;
         nutrientIds.add(nutrientJson['id'] as int);
       }
     }

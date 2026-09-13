@@ -48,13 +48,15 @@ class FileService {
   final String pathToFiles = p.join('lib', 'db');
 
   /// The file name for the original USDA database file.
-  late final String fileNameOriginalDBFile = p.join(pathToFiles, 'do_not_delete', 'original_usda.json');
+  late final String fileNameOriginalDBFile =
+      p.join(pathToFiles, 'do_not_delete', 'original_usda.json');
 
   /// The file name for the nutrient CSV file.
   late final String fileNameNutrientsCsv = p.join(pathToFiles, 'do_not_delete', 'nutrient.csv');
 
   /// The file name for the original nutrient CSV file, converted to JSON.
-  late final String fileNameNutrientsMap = p.join(pathToFiles, 'do_not_delete', 'original_nutrient_csv.json');
+  late final String fileNameNutrientsMap =
+      p.join(pathToFiles, 'do_not_delete', 'original_nutrient_csv.json');
 
   /// The file name for the duplicate phrases file.
   static const fileNameDuplicatePhrases = 'duplicate_phrases';
@@ -91,11 +93,11 @@ class FileService {
 
   /// Writes the contents to files based on their types.
   /// Appends a [folderHash] folder to the path.
-  Future<void> writeFileByType<T, U>({
+  Future<void> writeFileByType({
     required String fileName,
     required bool convertKeysToStrings,
-    T? listContents,
-    U? mapContents,
+    List<dynamic>? listContents,
+    Map<dynamic, dynamic>? mapContents,
   }) async {
     if (listContents == null && mapContents == null) {
       throw ArgumentError('No contents provided: writeFileByType');
@@ -103,7 +105,7 @@ class FileService {
 
     checkAndCreateFolder();
 
-    if (listContents != null && listContents is List) {
+    if (listContents != null) {
       final listFilePath = p.join(
         pathToFiles,
         folderHash,
@@ -115,13 +117,14 @@ class FileService {
       );
     }
 
-    if (mapContents != null && mapContents is Map) {
+    if (mapContents != null) {
       final mapFilePath = p.join(
         pathToFiles,
         folderHash,
         '${fileHash}_$fileName.json',
       ); //'$pathToFiles/$fileHash/$fileName.json';
-      final convertedMap = convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
+      final convertedMap =
+          convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
       await _writeJsonFile(filePath: mapFilePath, contents: convertedMap);
     }
   }

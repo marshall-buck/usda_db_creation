@@ -22,7 +22,7 @@ void main() {
       test('should write list contents to a text file', () async {
         final listContents = ['item1', 'item2', 'item3'];
 
-        await fileService.writeFileByType<List<String>, Null>(
+        await fileService.writeFileByType(
           fileName: 'testList',
           convertKeysToStrings: false,
           listContents: listContents,
@@ -40,7 +40,7 @@ void main() {
       test('should write map contents to a json file', () async {
         final mapContents = {'key1': 'value1', 'key2': 'value2'};
 
-        await fileService.writeFileByType<Null, Map<String, String>>(
+        await fileService.writeFileByType(
           fileName: 'testJson',
           convertKeysToStrings: false,
           mapContents: mapContents,
@@ -56,7 +56,7 @@ void main() {
 
       test('should throw ArgumentError when no contents are provided', () {
         expect(
-          () => fileService.writeFileByType<Null, Null>(
+          () => fileService.writeFileByType(
             fileName: 'testEmpty',
             convertKeysToStrings: false,
           ),
