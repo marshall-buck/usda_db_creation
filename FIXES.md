@@ -22,10 +22,7 @@ pairs `?.` with a non-null cast, yielding a confusing cast error instead of a
 real message. The field is never null after `init`.
 
 ✅ `lib/db_parser.dart:133` — `nutrient.id != 9999` is dead; `_findNutrient(9999)`
-already `continue`d above. The `9999` sentinel is a magic number with no purpose.
-
-🔴 `lib/db_parser.dart:121` — `originalNutrientTableEdit[id]!['unit']!` plus a
-bare `throw Exception` on unit mismatch aborts a multi-minute build over one row.
+already `continue`d above. The `9999` sentinel is a magic number with no purpose.wai
 
 🔴 `lib/db_parser.dart:133` — the `amount > 0` filter conflates "0 g sodium" with
 "sodium unknown" in the output.

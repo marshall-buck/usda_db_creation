@@ -120,6 +120,13 @@ class DBParser {
   ///
   /// Returns: `Map<String, num>` where each key is a nutrient id and each
   /// value is the amount.
+  ///
+  /// Throws on a unit mismatch rather than skipping the row, and that is
+  /// deliberate. The amounts are written bare, with the unit implied by
+  /// [Nutrient.originalNutrientTableEdit], so a row whose `unitName` disagrees
+  /// with the table would put a number in the database under the wrong unit,
+  /// and mg against g is a 1000x error. Aborting the run beats publishing a
+  /// database that is quietly wrong.
   Map<String, num> createNutrientsMap({
     required List<dynamic> listOfNutrients,
   }) {
@@ -133,7 +140,13 @@ class DBParser {
       if (nutrientId == null || !_findNutrient(nutrientId)) continue;
 
       final unit = nutrientJson['unitName'] as String;
-      final originalNutrientUnit = Nutrient.originalNutrientTableEdit[nutrientId]!['unit']!;
+      final originalNutrientUnit = Nutrient.originalNutrientTableEdit[nutrientId]?['unit'];
+      if (originalNutrientUnit == null) {
+        throw StateError(
+          'Nutrient id $nutrientId is in keepTheseNutrients but has no unit in '
+          'Nutrient.originalNutrientTableEdit',
+        );
+      }
       if (unit.toLowerCase() != originalNutrientUnit.toLowerCase()) {
         throw Exception(
           'unit mismatch id: $nutrientId unit: $unit \n  originalNutrient: $originalNutrient',
