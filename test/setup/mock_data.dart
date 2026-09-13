@@ -7,26 +7,23 @@ const mockDescriptionTxtFile = '''
 ''';
 
 const mockDescriptionMap = {
-  167512:
-      'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
+  167512: 'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
   167513: 'Pillsbury, Cinnamon Rolls with Icing, 100% refrigerated dough',
-  167514:
-      'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry, 2% milk',
+  167514: 'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry, 2% milk',
 };
 
 const nutrientMap = {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10};
 
 const mockFoodItem = FoodModel(
-    id: 111111,
-    description:
-        'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
-    nutrientsMap: nutrientMap);
+  id: 111111,
+  description: 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
+  nutrientsMap: nutrientMap,
+);
 const Map<int, dynamic> mockFoodJson = {
   111111: {
-    'description':
-        'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
-    'nutrients': {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10}
-  }
+    'description': 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
+    'nutrients': {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10},
+  },
 };
 
 const mockNutrientCSVFile = '''
@@ -37,23 +34,14 @@ const mockNutrientCSVFile = '''
 const mockCsvLines = [
   ['id', 'name', 'unit_name', 'nutrient_nbr', 'rank'],
   ['1002', 'Nitrogen', 'G', '202', '500'],
-  ["1003", "Protein", "G", "203", "600"],
+  ['1003', 'Protein', 'G', '203', '600'],
 ];
 
 const mockDescriptionRecords = [
   (111111, 'George Weston Bakeries, Thomas English Muffins'),
-  (
-    111112,
-    "Pears, raw, green anjou (Includes foods for USDA's Food Distribution Program)"
-  ),
-  (
-    111113,
-    "Apples, raw, fuji, with skin (Includes foods for USDA's Food Distribution Program)"
-  ),
-  (
-    111114,
-    "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"
-  ),
+  (111112, "Pears, raw, green anjou (Includes foods for USDA's Food Distribution Program)"),
+  (111113, "Apples, raw, fuji, with skin (Includes foods for USDA's Food Distribution Program)"),
+  (111114, "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"),
   (123456, 'The quick brown fox jumps over the lazy dog. '),
   (234567, 'In a distant galaxy, stars shimmered like diamonds.'),
   (345678, 'A mysterious melody echoed through the ancient forest.'),
@@ -68,24 +56,15 @@ const mockDescriptionRecords = [
   (122347, 'In the heart of the city, life buzzed with energy.'),
   (132348, 'The library was a haven of knowledge and silence.'),
   (142349, 'Dreams weave tales of wonder and fear.'),
-  (
-    152340,
-    'Under the starry sky, this is a repeated phrase 28 a campfire crackled.'
-  ),
-  (
-    162341,
-    'Majestic mountains towered over the serene valley this is a repeated phrase 28'
-  ),
+  (152340, 'Under the starry sky, this is a repeated phrase 28 a campfire crackled.'),
+  (162341, 'Majestic mountains towered over the serene valley this is a repeated phrase 28'),
   (172342, 'The old clock tower chimed, marking the hour.'),
   (182343, 'Raindrops danced on the windowpane during the storm.'),
   (192344, 'The garden bloomed with a myriad of colors.'),
   (202345, 'Whispering winds carried secrets of the ancient forest.'),
   (212346, 'The mirror reflected a room long forgotten.'),
   (222347, 'A hidden path led to an enchanted waterfall.'),
-  (
-    232348,
-    'In the artists studio, creativity knew no this is a repeated phrase 28 bounds.'
-  ),
+  (232348, 'In the artists studio, creativity knew no this is a repeated phrase 28 bounds.'),
   (242349, 'Stars twinkled like jewels in the night sky.'),
   (252340, 'A forgotten melody played on the old piano.'),
   (262341, 'The old book held tales of magic and adventure.'),
@@ -113,14 +92,14 @@ const mockDescriptionRecords = [
   (482343, 'The stars and moon illuminated the desert night.'),
   (492344, 'Old legends spoke of dragons and mythical creatures.'),
   (502345, 'The sun rose, casting a golden light on the new day.'),
-  (512346, 'Enchanted whispers echoed in the forgotten ruins.')
+  (512346, 'Enchanted whispers echoed in the forgotten ruins.'),
 ]; //length 55
 
 const Map<String, List<int>> mockWordIndexMap = {
-  "apple": [1, 2],
-  "crabapple": [3, 4],
-  "2%": [3],
-  "21": [3, 4],
+  'apple': [1, 2],
+  'crabapple': [3, 4],
+  '2%': [3],
+  '21': [3, 4],
 };
 
 /* cSpell:disable */
@@ -162,5 +141,5 @@ const Map<String, List<int>> mockUnHashedSubstrings = {
   'rabap': [3, 4],
   'rabapp': [3, 4],
   'rabappl': [3, 4],
-  'rabapple': [3, 4]
+  'rabapple': [3, 4],
 };

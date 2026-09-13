@@ -11,9 +11,8 @@ late final FileService fileService;
 void main() {
   setUpAll(() => fileService = FileService());
   tearDown(() async {
-    final testDirectory =
-        Directory(p.join(fileService.pathToFiles, fileService.folderHash));
-    if (await testDirectory.exists()) {
+    final testDirectory = Directory(p.join(fileService.pathToFiles, fileService.folderHash));
+    if (testDirectory.existsSync()) {
       await testDirectory.delete(recursive: true);
     }
   });
@@ -23,7 +22,7 @@ void main() {
       test('should write list contents to a text file', () async {
         final listContents = ['item1', 'item2', 'item3'];
 
-        await fileService.writeFileByType<List, Null>(
+        await fileService.writeFileByType<List<String>, Null>(
           fileName: 'testList',
           convertKeysToStrings: false,
           listContents: listContents,
@@ -31,35 +30,33 @@ void main() {
 
         final fileName = '${fileService.fileHash}_testList.txt';
 
-        final filePath =
-            p.join(fileService.pathToFiles, fileService.folderHash, fileName);
+        final filePath = p.join(fileService.pathToFiles, fileService.folderHash, fileName);
         final file = File(filePath);
 
-        expect(await file.exists(), isTrue);
+        expect(file.existsSync(), isTrue);
         expect(await file.readAsString(), listContents.join('\n'));
       });
 
       test('should write map contents to a json file', () async {
         final mapContents = {'key1': 'value1', 'key2': 'value2'};
 
-        await fileService.writeFileByType<Null, Map>(
+        await fileService.writeFileByType<Null, Map<String, String>>(
           fileName: 'testJson',
           convertKeysToStrings: false,
           mapContents: mapContents,
         );
         final fileName = '${fileService.fileHash}_testJson.json';
 
-        final filePath =
-            p.join(fileService.pathToFiles, fileService.folderHash, fileName);
+        final filePath = p.join(fileService.pathToFiles, fileService.folderHash, fileName);
         final file = File(filePath);
 
-        expect(await file.exists(), isTrue);
+        expect(file.existsSync(), isTrue);
         expect(jsonDecode(await file.readAsString()), mapContents);
       });
 
       test('should throw ArgumentError when no contents are provided', () {
         expect(
-          () async => await fileService.writeFileByType(
+          () => fileService.writeFileByType<Null, Null>(
             fileName: 'testEmpty',
             convertKeysToStrings: false,
           ),
@@ -69,28 +66,30 @@ void main() {
     });
 
     group('readCsvFile method tests', () {
-      test('should read CSV file and return its contents as a list of lists',
-          () async {
+      test('should read CSV file and return its contents as a list of lists', () async {
         final filePath = p.join('test', 'test_files', 'test_file.csv');
 
         final result = await fileService.readCsvFile(filePath: filePath);
 
-        final d = DeepCollectionEquality();
+        const d = DeepCollectionEquality();
         expect(
-            d.equals(result, [
-              ["id", "name", "unit_name", "nutrient_nbr", "rank"],
-              ["1002", "Nitrogen", "G", "202", "500"],
-              ["1003", "Protein", "G", "203", "600"],
-              ["1004", "Total lipid (fat)", "G", "204", "800"],
-              ["1005", "Carbohydrate, by difference", "G", "205", "1110"]
-            ]),
-            true);
+          d.equals(result, [
+            ['id', 'name', 'unit_name', 'nutrient_nbr', 'rank'],
+            ['1002', 'Nitrogen', 'G', '202', '500'],
+            ['1003', 'Protein', 'G', '203', '600'],
+            ['1004', 'Total lipid (fat)', 'G', '204', '800'],
+            ['1005', 'Carbohydrate, by difference', 'G', '205', '1110'],
+          ]),
+          true,
+        );
       });
       test('should throw an exception when the file does not exist', () async {
         final filePath = p.join('test', 'test_files', 'non_existent_file.csv');
 
-        expect(() async => await fileService.readCsvFile(filePath: filePath),
-            throwsA(isA<FileSystemException>()));
+        expect(
+          () async => await fileService.readCsvFile(filePath: filePath),
+          throwsA(isA<FileSystemException>()),
+        );
       });
 
       test('should return an empty list when the file is empty', () async {
@@ -106,7 +105,7 @@ void main() {
     group('loadData method tests', () {
       test('should read file and return its contents as a string', () {
         final filePath = p.join('test', 'test_files', 'test_file.txt');
-        final testContent = 'This is a test string.';
+        const testContent = 'This is a test string.';
 
         final result = fileService.loadData(filePath: filePath);
 
@@ -116,8 +115,10 @@ void main() {
       test('should throw an exception when the file does not exist', () {
         final filePath = p.join('test', 'test_files', 'non_existent_file.txt');
 
-        expect(() => fileService.loadData(filePath: filePath),
-            throwsA(isA<FileSystemException>()));
+        expect(
+          () => fileService.loadData(filePath: filePath),
+          throwsA(isA<FileSystemException>()),
+        );
       });
 
       test('should correctly load very large JSON files', () async {
@@ -137,8 +138,7 @@ void main() {
 
     group('checkAndCreateFolder method tests', () {
       test('should create folder if it does not exist', () {
-        final folderPath =
-            p.join(fileService.pathToFiles, fileService.folderHash);
+        final folderPath = p.join(fileService.pathToFiles, fileService.folderHash);
 
         fileService.checkAndCreateFolder();
 
@@ -148,8 +148,7 @@ void main() {
       });
 
       test('should not create folder if it already exists', () {
-        final folderPath =
-            p.join(fileService.pathToFiles, fileService.folderHash);
+        final folderPath = p.join(fileService.pathToFiles, fileService.folderHash);
         Directory(folderPath).createSync();
 
         fileService.checkAndCreateFolder();
@@ -166,18 +165,24 @@ void main() {
 
       test('fileHash should not contain any invalid characters', () {
         expect(
-            fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')), false);
+          fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')),
+          false,
+        );
       });
 
       test('fileHash should not contain any invalid characters', () {
-        expect(fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')),
-            isFalse);
+        expect(
+          fileService.folderHash.contains(RegExp(r'[\\/:*?"<>|\s]')),
+          isFalse,
+        );
       });
 
       test('fileHash should be unique for each instance of FileService', () {
         final anotherFileService = FileService();
-        expect(fileService.folderHash,
-            isNot(equals(anotherFileService.folderHash)));
+        expect(
+          fileService.folderHash,
+          isNot(equals(anotherFileService.folderHash)),
+        );
       });
     });
   });

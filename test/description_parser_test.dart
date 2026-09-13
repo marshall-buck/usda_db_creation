@@ -10,66 +10,56 @@ import 'setup/mock_db.dart';
 import 'setup/setup.dart';
 
 void main() {
-  setUpAll(() {
-    set_up_all();
-  });
+  setUpAll(set_up_all);
 
-  tearDown(() {
-    tear_down();
-  });
+  tearDown(tear_down);
   group('DescriptionParser class tests', () {
     group('createDataStructure()', () {
       test('coverts list of descriptions records to map', () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         const expected = {
-          167512:
-              "Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough",
-          167513: "Pillsbury, Cinnamon Rolls with Icing, refrigerated dough",
+          167512: 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
+          167513: 'Pillsbury, Cinnamon Rolls with Icing, refrigerated dough',
           // excluded category
           // 167514:
           //     "Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry"
         };
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final descriptions = DescriptionParser();
         final res = await descriptions.createDataStructure(dbParser: dbParser);
         // print(res);
-        final mapEquals = MapEquality();
+        const mapEquals = MapEquality<int, String>();
         expect(mapEquals.equals(expected, res), true);
-        verifyNever(() => mockFileLoaderService
-            .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-                fileName: 'descriptions',
-                convertKeysToStrings: true,
-                mapContents: any<Map<int, String>>(named: 'mapContents'),
-                listContents:
-                    any<List<DescriptionRecord>>(named: 'listContents')));
+        verifyNever(
+          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+            fileName: 'descriptions',
+            convertKeysToStrings: true,
+            mapContents: any<Map<int, String>>(named: 'mapContents'),
+            listContents: any<List<DescriptionRecord>>(named: 'listContents'),
+          ),
+        );
       });
 
-      test('fileLoader writeFileByType is called when writeFile is true',
-          () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+      test('fileLoader writeFileByType is called when writeFile is true', () async {
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        when(() => mockFileLoaderService
-                .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-              fileName: any<String>(
-                named: 'fileName',
-              ),
-              convertKeysToStrings: true,
-              listContents: any<List<DescriptionRecord>>(named: 'listContents'),
-              mapContents: any<Map<int, String>>(named: 'mapContents'),
-            )).thenAnswer((_) async {});
+        when(
+          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            convertKeysToStrings: true,
+            listContents: any<List<DescriptionRecord>>(named: 'listContents'),
+            mapContents: any<Map<int, String>>(named: 'mapContents'),
+          ),
+        ).thenAnswer((_) async {});
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final descriptions = DescriptionParser();
         await descriptions.createDataStructure(
@@ -78,59 +68,52 @@ void main() {
           writeFile: true,
         );
 
-        verify(() => mockFileLoaderService
-                .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-                    fileName: 'descriptions',
-                    convertKeysToStrings: true,
-                    mapContents: any<Map<int, String>>(named: 'mapContents'),
-                    listContents:
-                        any<List<DescriptionRecord>>(named: 'listContents')))
-            .called(1);
+        verify(
+          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+            fileName: 'descriptions',
+            convertKeysToStrings: true,
+            mapContents: any<Map<int, String>>(named: 'mapContents'),
+            listContents: any<List<DescriptionRecord>>(named: 'listContents'),
+          ),
+        ).called(1);
       });
-      test('fileLoader methods are not called when writeFile is false',
-          () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+      test('fileLoader methods are not called when writeFile is false', () async {
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        when(() => mockFileLoaderService
-                .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-              fileName: any<String>(
-                named: 'fileName',
-              ),
-              convertKeysToStrings: true,
-              listContents: any<List<DescriptionRecord>>(named: 'listContents'),
-              mapContents: any<Map<int, String>>(named: 'mapContents'),
-            )).thenAnswer((_) async {});
+        when(
+          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            convertKeysToStrings: true,
+            listContents: any<List<DescriptionRecord>>(named: 'listContents'),
+            mapContents: any<Map<int, String>>(named: 'mapContents'),
+          ),
+        ).thenAnswer((_) async {});
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final descriptions = DescriptionParser();
         await descriptions.createDataStructure(
           dbParser: dbParser,
-          returnData: true,
-          writeFile: false,
         );
 
-        verifyNever(() => mockFileLoaderService
-            .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-                fileName: 'descriptions',
-                convertKeysToStrings: true,
-                mapContents: any<Map<int, String>>(named: 'mapContents'),
-                listContents:
-                    any<List<DescriptionRecord>>(named: 'listContents')));
+        verifyNever(
+          () => mockFileLoaderService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+            fileName: 'descriptions',
+            convertKeysToStrings: true,
+            mapContents: any<Map<int, String>>(named: 'mapContents'),
+            listContents: any<List<DescriptionRecord>>(named: 'listContents'),
+          ),
+        );
       });
 
       test('Throws ArgumentError', () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
         final descriptions = DescriptionParser();
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         // await descriptions.createDataStructure(
         //   dbParser: dbParser,
         //   writeFile: false,
@@ -140,21 +123,18 @@ void main() {
         //     throwsA(isA<ArgumentError>()));
 
         expect(
-            () async => await descriptions.createDataStructure(
-                  dbParser: dbParser,
-                  writeFile: false,
-                  returnData: false,
-                ),
-            throwsA(isA<ArgumentError>()));
+          () async => await descriptions.createDataStructure(
+            dbParser: dbParser,
+            returnData: false,
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
       });
     });
     group('createOriginalDescriptionRecords()', () {
       test('populates the correct records', () {
-        const List<DescriptionRecord> expectedResults = [
-          (
-            167512,
-            'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough'
-          ),
+        const expectedResults = <DescriptionRecord>[
+          (167512, 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough'),
           (167513, 'Pillsbury, Cinnamon Rolls with Icing, refrigerated dough'),
           // Excluded category
           // (
@@ -162,16 +142,15 @@ void main() {
           //   'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry',
           // ),
         ];
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final res = DescriptionParser.createOriginalDescriptionRecords(
-            originalFoodsList: dbParser.originalFoodsList);
+          originalFoodsList: dbParser.originalFoodsList,
+        );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<DescriptionRecord>();
         expect(listEquals.equals(expectedResults, res), true);
 
         // expect(res, expectedResults);
@@ -181,62 +160,58 @@ void main() {
     group('getLongestDescriptionRecord()--', () {
       test('returns length of longest string', () {
         final res = DescriptionParser.getLongestDescriptionRecord(
-            descriptions: mockDescriptionRecords);
-        final d = DeepCollectionEquality();
-        final expected = (
+          descriptions: mockDescriptionRecords,
+        );
+        const d = DeepCollectionEquality();
+        const expected = (
           91,
-          (
-            111114,
-            "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)"
-          )
+          (111114, "Apples, raw, red delicious, with skin (Includes foods for USDA's Food Distribution Program)")
         );
         expect(d.equals(res, expected), true);
       });
     });
     group('createRepeatedPhraseFrequencyMap()', () {
       test('returns duplicates from anywhere in sentence', () async {
-        final Map<String, int>? res =
-            await DescriptionParser.createRepeatedPhraseFrequencyMap(
-                listOfRecords: mockDescriptionRecords,
-                minPhraseLength: 28,
-                minNumberOfDuplicatesToShow: 3,
-                returnData: true);
+        final res = await DescriptionParser.createRepeatedPhraseFrequencyMap(
+          listOfRecords: mockDescriptionRecords,
+          minPhraseLength: 28,
+          minNumberOfDuplicatesToShow: 3,
+          returnData: true,
+        );
 
-        final bool doesContainValue1 =
-            res!.containsKey('this is a repeated phrase 28');
+        final doesContainValue1 = res!.containsKey('this is a repeated phrase 28');
         expect(doesContainValue1, true);
       });
       test('writeByType is called', () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
         when(
-            () => mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
-                fileName: any<String>(
-                  named: 'fileName',
-                ),
-                mapContents: any<Map<String, int>>(named: 'mapContents'),
-                convertKeysToStrings: false)).thenAnswer((_) async {});
+          () => mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            mapContents: any<Map<String, int>>(named: 'mapContents'),
+            convertKeysToStrings: false,
+          ),
+        ).thenAnswer((_) async {});
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
-        final Map<String, int>? res =
-            await DescriptionParser.createRepeatedPhraseFrequencyMap(
-                listOfRecords: mockDescriptionRecords,
-                minPhraseLength: 28,
-                minNumberOfDuplicatesToShow: 3,
-                dbParser: dbParser,
-                returnData: false);
-        verify(() =>
-                mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
-                    convertKeysToStrings: false,
-                    fileName: any<String>(
-                      named: 'fileName',
-                    ),
-                    mapContents: any<Map<String, int>>(named: 'mapContents')))
-            .called(1);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final res = await DescriptionParser.createRepeatedPhraseFrequencyMap(
+          listOfRecords: mockDescriptionRecords,
+          minPhraseLength: 28,
+          minNumberOfDuplicatesToShow: 3,
+          dbParser: dbParser,
+        );
+        verify(
+          () => mockFileLoaderService.writeFileByType<Null, Map<String, int>>(
+            convertKeysToStrings: false,
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            mapContents: any<Map<String, int>>(named: 'mapContents'),
+          ),
+        ).called(1);
 
         expect(res, isNull);
       });
@@ -244,7 +219,7 @@ void main() {
 
     group('removeUnwantedPhrasesFromDescriptions()', () {
       test('removes unwanted descriptions', () {
-        const List<DescriptionRecord> expectedDescriptions = [
+        const expectedDescriptions = <DescriptionRecord>[
           (111111, 'George Weston Bakeries, Thomas English Muffins'),
           (111112, 'Pears, raw, green anjou '),
           (111113, 'Apples, raw, fuji, with skin '),
@@ -291,10 +266,7 @@ void main() {
           (402345, 'Mysterious footprints led through the snowy forest.'),
           (412346, 'The scent of pine filled the crisp mountain air.'),
           (422347, 'An old map revealed secrets of lost treasures.'),
-          (
-            432348,
-            'The night sky was ablaze with a spectacular meteor shower.'
-          ),
+          (432348, 'The night sky was ablaze with a spectacular meteor shower.'),
           (442349, 'A cozy fireplace crackled on a cold winters night.'),
           (452340, 'The ancient bridge spanned the tranquil river.'),
           (462341, 'A kaleidoscope of butterflies fluttered in the meadow.'),
@@ -302,18 +274,19 @@ void main() {
           (482343, 'The stars and moon illuminated the desert night.'),
           (492344, 'Old legends spoke of dragons and mythical creatures.'),
           (502345, 'The sun rose, casting a golden light on the new day.'),
-          (512346, 'Enchanted whispers echoed in the forgotten ruins.')
+          (512346, 'Enchanted whispers echoed in the forgotten ruins.'),
         ];
 
         const listOfPhrasesToDelete = [
           "(Includes foods for USDA's Food Distribution Program)",
-          'this is a repeated phrase 28'
+          'this is a repeated phrase 28',
         ];
         final res = DescriptionParser.removeUnwantedPhrasesFromDescriptions(
-            descriptions: mockDescriptionRecords,
-            unwantedPhrases: listOfPhrasesToDelete);
+          descriptions: mockDescriptionRecords,
+          unwantedPhrases: listOfPhrasesToDelete,
+        );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<DescriptionRecord>();
 
         expect(listEquals.equals(expectedDescriptions, res), true);
       });
@@ -322,42 +295,37 @@ void main() {
 
   group('parseDescriptionsFromTxtFile()', () {
     test('coverts list of descriptions records to map', () {
-      when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-          .thenReturn(mockDescriptionTxtFile);
+      when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockDescriptionTxtFile);
 
       const expected = {
-        167512:
-            'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
+        167512: 'Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough',
         167513: 'Pillsbury, Cinnamon Rolls with Icing, 100% refrigerated dough',
-        167514:
-            'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry, 2% milk',
+        167514: 'Kraft Foods, Shake N Bake Original Recipe, Coating for Pork, dry, 2% milk',
       };
 
       final res = DescriptionParser.parseDescriptionsFromTxtFile(
-          filePath: 'fake', fileService: mockFileLoaderService);
-      final mapEquals = MapEquality();
+        filePath: 'fake',
+        fileService: mockFileLoaderService,
+      );
+      const mapEquals = MapEquality<int, String>();
       expect(mapEquals.equals(expected, res), true);
     });
   });
 
   group('isExcludedCategory', () {
     test('returns true is foodItem has an excluded category', () {
-      when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-          .thenReturn(mockUsdaFile);
-      final dbParser =
-          DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+      when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+      final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
       final originalFoodsList = dbParser.originalFoodsList;
-      final foodItem = originalFoodsList[2];
+      final foodItem = originalFoodsList[2] as Map<dynamic, dynamic>;
       final res = DescriptionParser.isExcludedCategory(foodItem: foodItem);
       expect(res, true);
     });
     test('returns false is foodItem has an excluded category', () {
-      when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-          .thenReturn(mockUsdaFile);
-      final dbParser =
-          DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+      when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+      final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
       final originalFoodsList = dbParser.originalFoodsList;
-      final foodItem = originalFoodsList[0];
+      final foodItem = originalFoodsList[0] as Map<dynamic, dynamic>;
       final res = DescriptionParser.isExcludedCategory(foodItem: foodItem);
       expect(res, false);
     });

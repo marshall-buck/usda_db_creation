@@ -24,20 +24,23 @@ import 'package:usda_db_creation/file_service.dart';
 /// The [Substrings] class has the following methods:
 /// - [createDataStructure] Creates substrings from the given [wordIndexMap] and returns a map of substrings with a minimum length.
 ///   - Parameters:
-///     - [dbParser] A required [DBParser] object used for file operations.
-///     - [returnData] A boolean indicating whether to return the created data structure. Default is true.
-///     - [writeFile] A boolean indicating whether to write the created data structure to a file. Default is false.
+///     - `dbParser` A required [DBParser] object used for file operations.
+///     - `returnData` A boolean indicating whether to return the created data structure. Default is true.
+///     - `writeFile` A boolean indicating whether to write the created data structure to a file. Default is false.
 ///   - Returns:
 ///     - A [Future] that resolves to a map of substrings with a minimum length to a list of corresponding indices.
-///       If [returnData] is false, the future resolves to null.
-class Substrings implements DataStructure {
-  Map<String, List<int>> wordIndexMap;
+///       If `returnData` is false, the future resolves to null.
+class Substrings implements DataStructure<Map<String, List<int>>?> {
+  /// Creates the substring builder from an already built word index.
   Substrings(this.wordIndexMap);
+
+  /// Words mapped to the list of description indexes that contain them.
+  Map<String, List<int>> wordIndexMap;
 
   /// Minimum number of characters to use for the substring.
   int minLength = 2;
 
-  /// Creates substrings from the given [wordIndex] and returns a map of
+  /// Creates substrings from the given [wordIndexMap] and returns a map of
   /// substrings with a minimum of [minLength] length to a list of corresponding index's.
   ///
   ///  {'apple': [1, 2], 'crabapple': [3, 4] };
@@ -53,35 +56,35 @@ class Substrings implements DataStructure {
   /// /* Cspell: enable*/
 
   @override
-  Future<Map<String, List<int>>?> createDataStructure(
-      {required DBParser dbParser,
-      bool returnData = true,
-      bool writeFile = false}) async {
+  Future<Map<String, List<int>>?> createDataStructure({
+    required DBParser dbParser,
+    bool returnData = true,
+    bool writeFile = false,
+  }) async {
     if (!returnData && !writeFile) {
-      throw (ArgumentError('Both returnStructure and writeFile are false'));
+      throw ArgumentError('Both returnStructure and writeFile are false');
     }
-    final indexMap =
-        SplayTreeMap<String, Set<int>>((final a, final b) => a.compareTo(b));
+    final indexMap = SplayTreeMap<String, Set<int>>((a, b) => a.compareTo(b));
 
     for (final item in wordIndexMap.entries) {
-      final String word = item.key;
+      final word = item.key;
 
-      final List<int> wordIndexList = List<int>.from(item.value);
+      final wordIndexList = List<int>.from(item.value);
 
-      for (int i = 0; i < word.length; i++) {
+      for (var i = 0; i < word.length; i++) {
         // If the word is a number followed by a % or just a number,
         //add it to the indexMap directly, and skip the iteration.
         if (word.isNumberWithPercent() || word.isNumber()) {
           if (!indexMap.containsKey(word)) {
             indexMap[word] = <int>{};
           }
-          indexMap[word.toString()]!.addAll(wordIndexList);
+          indexMap[word]!.addAll(wordIndexList);
 
           continue;
         }
 
-        for (int j = i + minLength; j <= word.length; j++) {
-          final String substring = word.substring(i, j);
+        for (var j = i + minLength; j <= word.length; j++) {
+          final substring = word.substring(i, j);
 
           if (!indexMap.containsKey(substring)) {
             indexMap[substring] = <int>{};
@@ -92,14 +95,14 @@ class Substrings implements DataStructure {
       }
     }
 
-    final sortedMap = indexMap
-        .map((final key, final value) => MapEntry(key, value.toList()..sort()));
+    final sortedMap = indexMap.map((key, value) => MapEntry(key, value.toList()..sort()));
 
     if (writeFile) {
       await dbParser.fileService.writeFileByType<Null, Map<String, List<int>>>(
-          fileName: FileService.fileNameSubstrings, // fileNameSubstrings,
-          convertKeysToStrings: false,
-          mapContents: sortedMap);
+        fileName: FileService.fileNameSubstrings, // fileNameSubstrings,
+        convertKeysToStrings: false,
+        mapContents: sortedMap,
+      );
     }
 
     return returnData ? sortedMap : null;

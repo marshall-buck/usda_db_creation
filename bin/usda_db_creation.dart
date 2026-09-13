@@ -1,4 +1,6 @@
-// ignore_for_file: unused_import
+// The imports below are kept so individual steps can be called ad hoc while
+// tweaking the generation pipeline, and `print` is this CLI's real output.
+// ignore_for_file: unused_import, avoid_print
 
 import 'package:usda_db_creation/autocomplete.dart';
 import 'package:usda_db_creation/db_parser.dart';
@@ -15,9 +17,14 @@ void main() async {
   final fileService = FileService();
 
   final dbParser = DBParser.init(
-      filePath: fileService.fileNameOriginalDBFile, fileService: fileService);
+    filePath: fileService.fileNameOriginalDBFile,
+    fileService: fileService,
+  );
   await runner.createDBFiles(
-      dbParser: dbParser, fileService: fileService, extras: true);
+    dbParser: dbParser,
+    fileService: fileService,
+    extras: true,
+  );
 
   print(runner.getLongestDescription(dbParser: dbParser));
   print(runner.getShortestDescription(dbParser: dbParser));

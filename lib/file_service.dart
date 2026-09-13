@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:usda_db_creation/extensions/map_ext.dart';
 import 'package:path/path.dart' as p;
+import 'package:usda_db_creation/extensions/map_ext.dart';
 
 /// A class that provides file-related services, such as reading and writing files.
 ///
@@ -45,32 +45,50 @@ import 'package:path/path.dart' as p;
 /// );
 /// ```
 class FileService {
-  final pathToFiles = p.join('lib', 'db');
+  /// The path to the files directory.
+  final String pathToFiles = p.join('lib', 'db');
 
-  late final fileNameOriginalDBFile =
-      p.join(pathToFiles, 'do_not_delete', 'original_usda.json');
-  late final fileNameNutrientsCsv =
-      p.join(pathToFiles, 'do_not_delete', 'nutrient.csv');
-  late final fileNameNutrientsMap =
-      p.join(pathToFiles, 'do_not_delete', 'original_nutrient_csv.json');
+  /// The file name for the original USDA database file.
+  late final String fileNameOriginalDBFile = p.join(pathToFiles, 'do_not_delete', 'original_usda.json');
 
+  /// The file name for the nutrient CSV file.
+  late final String fileNameNutrientsCsv = p.join(pathToFiles, 'do_not_delete', 'nutrient.csv');
+
+  /// The file name for the original nutrient CSV file, converted to JSON.
+  late final String fileNameNutrientsMap = p.join(pathToFiles, 'do_not_delete', 'original_nutrient_csv.json');
+
+  /// The file name for the duplicate phrases file.
   static const fileNameDuplicatePhrases = 'duplicate_phrases';
-  static const fileNameOriginalDescriptions = 'original_descriptions.txt';
-  static const fileNameFinalDescriptions = 'descriptions';
-  static final fileNameSubstrings = 'substrings';
 
+  /// The file name for the original descriptions file.
+  static const fileNameOriginalDescriptions = 'original_descriptions.txt';
+
+  /// The file name for the final descriptions file.
+  static const fileNameFinalDescriptions = 'descriptions';
+
+  /// The file name for the substrings file.
+  static const fileNameSubstrings = 'substrings';
+
+  /// The file name for the autocomplete word index file.
   static const fileNameAutocompleteWordIndex = 'autocomplete_word_index';
-  static const fileNameAutocompleteWordIndexKeys =
-      'autocomplete_word_index_keys';
+
+  /// The file name for the autocomplete word index keys file.
+  static const fileNameAutocompleteWordIndexKeys = 'autocomplete_word_index_keys';
+
+  /// The file name for the autocomplete hash file.
   static const fileNameAutocompleteHash = 'autocomplete_hash';
+
+  /// The file name for the foods database file.
   static const fileNameFoodsDatabase = 'foods_db';
+
+  /// The file name for the file manifest file.
   static const fileNameManifest = 'file_manifest';
 
   /// Loads a DateTime sting at initialization so all
   /// Prefixes wil be the same.
-  String folderHash =
-      '${DateTime.now()}'.replaceAll(RegExp(r'[\\/:*?"<>|\s]'), '_');
+  String folderHash = '${DateTime.now()}'.replaceAll(RegExp(r'[\\/:*?"<>|\s]'), '_');
 
+  /// The portion of [folderHash] used to prefix each written file name.
   String get fileHash => folderHash.substring(folderHash.indexOf('.') + 1);
 
 // ************************** File Writers **************************
@@ -78,8 +96,8 @@ class FileService {
   /// Writes the contents to files based on their types.
   /// Appends a [folderHash] folder to the path.
   Future<void> writeFileByType<T, U>({
-    required final String fileName,
-    required final bool convertKeysToStrings,
+    required String fileName,
+    required bool convertKeysToStrings,
     T? listContents,
     U? mapContents,
   }) async {
@@ -91,51 +109,57 @@ class FileService {
       checkAndCreateFolder();
 
       if (listContents != null && listContents is List) {
-        final String listFilePath = p.join(pathToFiles, folderHash,
-            '${fileHash}_$fileName.txt'); // '$pathToFiles/$fileHash/$fileName.txt';
+        final listFilePath = p.join(
+          pathToFiles,
+          folderHash,
+          '${fileHash}_$fileName.txt',
+        ); // '$pathToFiles/$fileHash/$fileName.txt';
         await _writeListToTxtFile(
-            filePath: listFilePath, contents: listContents);
+          filePath: listFilePath,
+          contents: listContents,
+        );
       }
 
       if (mapContents != null && mapContents is Map) {
-        final String mapFilePath = p.join(pathToFiles, folderHash,
-            '${fileHash}_$fileName.json'); //'$pathToFiles/$fileHash/$fileName.json';
-        final Map convertedMap = convertKeysToStrings
-            ? mapContents.deepConvertMapKeyToString()
-            : mapContents;
+        final mapFilePath = p.join(
+          pathToFiles,
+          folderHash,
+          '${fileHash}_$fileName.json',
+        ); //'$pathToFiles/$fileHash/$fileName.json';
+        final convertedMap = convertKeysToStrings ? mapContents.deepConvertMapKeyToString() : mapContents;
         await _writeJsonFile(filePath: mapFilePath, contents: convertedMap);
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log(e.toString(), stackTrace: st, name: 'writeFileByType');
     }
   }
 
+  /// Writes the manifest file, whose contents are the current [fileHash].
   Future<void> writeManifestFile() async {
-    final String manifestFilePath = p.join(pathToFiles, folderHash);
+    final manifestFilePath = p.join(pathToFiles, folderHash);
     try {
-      final File file = File('$manifestFilePath/$fileNameManifest.txt');
-      print('Writing manifest file to: $manifestFilePath');
+      final file = File('$manifestFilePath/$fileNameManifest.txt');
+      log('Writing manifest file to: $manifestFilePath', name: 'writeManifestFile');
       await file.writeAsString(fileHash);
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log(e.toString(), stackTrace: st, name: 'writeStringToTxtFile');
     }
   }
 
   Future<void> _writeJsonFile({
-    required final String filePath,
-    required final Map<dynamic, dynamic> contents,
+    required String filePath,
+    required Map<dynamic, dynamic> contents,
     bool convertKeysToStrings = false,
   }) async {
     try {
-      Map mapToWrite;
+      Map<dynamic, dynamic> mapToWrite;
       if (convertKeysToStrings) {
-        mapToWrite =
-            contents.map((key, value) => MapEntry(key.toString(), value));
+        mapToWrite = contents.map((key, value) => MapEntry(key.toString(), value));
       } else {
         mapToWrite = contents;
       }
       await File(filePath).writeAsString(jsonEncode(mapToWrite));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log(e.toString(), stackTrace: st, name: 'writeJsonFile');
     }
   }
@@ -143,16 +167,16 @@ class FileService {
   /// Takes a [List], and writes a file to given [filePath], creating a new
   ///  line for each list item.
   Future<void> _writeListToTxtFile({
-    required final String filePath,
-    required final List<dynamic> contents,
+    required String filePath,
+    required List<dynamic> contents,
   }) async {
     try {
-      final File file = File(filePath);
+      final file = File(filePath);
 
-      final IOSink sink = file.openWrite();
+      final sink = file.openWrite();
 
       // Write the lines, if line is the last line, don't add \n
-      for (int i = 0; i < contents.length; i++) {
+      for (var i = 0; i < contents.length; i++) {
         final line = contents[i];
         if (i == contents.length - 1) {
           sink.write(line);
@@ -163,7 +187,7 @@ class FileService {
 
       await sink.flush();
       await sink.close();
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log(e.toString(), stackTrace: st, name: 'writeListToTxtFile');
     }
   }
@@ -175,9 +199,10 @@ class FileService {
     if (!directory.existsSync()) {
       try {
         directory.createSync(recursive: true);
-      } catch (e, st) {
+      } on Exception catch (e, st) {
         throw Exception(
-            'Failed to create folder in _checkAndCreateFolder: $path.  Error: $e, StackTrace: $st');
+          'Failed to create folder in _checkAndCreateFolder: $path.  Error: $e, StackTrace: $st',
+        );
       }
     }
   }
@@ -185,9 +210,9 @@ class FileService {
 // ************************** File Readers **************************
 
   /// Synchronously opens a file from [filePath].  Returns the contents as a [String].
-  String loadData({required final String filePath}) {
+  String loadData({required String filePath}) {
     final file = File(filePath);
-    final String contents = file.readAsStringSync();
+    final contents = file.readAsStringSync();
     if (!file.existsSync()) {
       throw FileSystemException('File not found', filePath);
     }
@@ -200,15 +225,16 @@ class FileService {
   /// Each inner list represents a row in the CSV file,
   /// and each string represents a cell value.
   /// [[cell1, cell2, cell3], [cell1, cell2, cell3]]
-  Future<List<List<String>>> readCsvFile(
-      {required final String filePath}) async {
+  Future<List<List<String>>> readCsvFile({
+    required String filePath,
+  }) async {
     final file = File(filePath);
-    final List<List<String>> csvData = [];
+    final csvData = <List<String>>[];
 
     if (!file.existsSync()) {
       throw FileSystemException('File not found', filePath);
     }
-    final List<String> lines = await file.readAsLines();
+    final lines = await file.readAsLines();
     for (final line in lines) {
       csvData.add(_parseCsvLine(line));
     }
@@ -230,11 +256,11 @@ class FileService {
   /// Returns a list of strings representing the fields in the CSV line.
 
   List<String> _parseCsvLine(String line) {
-    final List<String> fields = [];
-    bool inQuotes = false;
-    final StringBuffer buffer = StringBuffer();
+    final fields = <String>[];
+    var inQuotes = false;
+    final buffer = StringBuffer();
 
-    for (int i = 0; i < line.length; i++) {
+    for (var i = 0; i < line.length; i++) {
       if (line[i] == '"') {
         inQuotes = !inQuotes; // Toggle the inQuotes state
         continue;

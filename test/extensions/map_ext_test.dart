@@ -9,27 +9,29 @@ void main() {
         final map = {
           1: 'one',
           2: 'two',
-          3: {'4': 'four'}
+          3: {'4': 'four'},
         };
         final result = map.deepConvertMapKeyToString();
 
         // expect(result, isA<Map<String, dynamic>>());
 
-        final deep = DeepCollectionEquality();
+        const deep = DeepCollectionEquality();
         expect(
-            deep.equals(result, {
-              '1': 'one',
-              '2': 'two',
-              '3': {'4': 'four'}
-            }),
-            true);
+          deep.equals(result, {
+            '1': 'one',
+            '2': 'two',
+            '3': {'4': 'four'},
+          }),
+          true,
+        );
         expect(
-            deep.equals(result, {
-              '1': 'one',
-              '2': 'two',
-              3: {'4': 'four'}
-            }),
-            false);
+          deep.equals(result, {
+            '1': 'one',
+            '2': 'two',
+            3: {'4': 'four'},
+          }),
+          false,
+        );
       });
 
       test('should handle nested maps', () {
@@ -37,36 +39,38 @@ void main() {
           1: 'one',
           2: {
             3: {
-              4: [1, 2, 3, 4]
-            }
-          }
+              4: [1, 2, 3, 4],
+            },
+          },
         };
         final result = map.deepConvertMapKeyToString();
 
         expect(result['2'], isA<Map<dynamic, dynamic>>());
-        expect(result['2'].keys, contains('3'));
+        expect((result['2']! as Map<dynamic, dynamic>).keys, contains('3'));
 
-        final deep = DeepCollectionEquality();
+        const deep = DeepCollectionEquality();
         expect(
-            deep.equals(result, {
-              '1': 'one',
-              '2': {
-                '3': {
-                  '4': [1, 2, 3, 4]
-                }
-              }
-            }),
-            true);
+          deep.equals(result, {
+            '1': 'one',
+            '2': {
+              '3': {
+                '4': [1, 2, 3, 4],
+              },
+            },
+          }),
+          true,
+        );
         expect(
-            deep.equals(result, {
-              '1': 'one',
-              '2': {
-                '3': {
-                  4: [1, 2, 3, 4]
-                }
-              }
-            }),
-            false);
+          deep.equals(result, {
+            '1': 'one',
+            '2': {
+              '3': {
+                4: [1, 2, 3, 4],
+              },
+            },
+          }),
+          false,
+        );
       });
       // test('should skip keys value, but change the key', () {
       //   final map = {
@@ -138,51 +142,55 @@ void main() {
         final map = {
           '1123': 'one',
           '2': 'two',
-          '3': {'4': 'four'}
+          '3': {'4': 'four'},
         };
         final result = map.deepConvertMapKeyToInt();
-        final deep = DeepCollectionEquality();
+        const deep = DeepCollectionEquality();
         expect(
-            deep.equals(result, {
-              1123: 'one',
-              2: 'two',
-              3: {4: 'four'}
-            }),
-            true);
+          deep.equals(result, {
+            1123: 'one',
+            2: 'two',
+            3: {4: 'four'},
+          }),
+          true,
+        );
       });
 
       test('should handle nested maps', () {
         final map = {
           '1': 'one',
           '2': {
-            '3': {'4': 'four'}
-          }
+            '3': {'4': 'four'},
+          },
         };
         final result = map.deepConvertMapKeyToInt();
-        final deep = DeepCollectionEquality();
+        const deep = DeepCollectionEquality();
         expect(
-            deep.equals(result, {
-              1: 'one',
-              2: {
-                3: {4: 'four'}
-              }
-            }),
-            true);
+          deep.equals(result, {
+            1: 'one',
+            2: {
+              3: {4: 'four'},
+            },
+          }),
+          true,
+        );
       });
 
       test('should ignore non-string keys', () {
         final map = {1: 'one', '2': 'two', '3': true};
         final result = map.deepConvertMapKeyToInt();
-        final deep = DeepCollectionEquality();
+        const deep = DeepCollectionEquality();
         expect(deep.equals(result, {1: 'one', 2: 'two', 3: true}), true);
       });
 
       test('should ignore non-integer string keys', () {
         final map = {'a': 'alpha', '2': 'two', '3b': 'threeB'};
         final result = map.deepConvertMapKeyToInt();
-        final deep = DeepCollectionEquality();
-        expect(deep.equals(result, {'a': 'alpha', 2: 'two', '3b': 'threeB'}),
-            true);
+        const deep = DeepCollectionEquality();
+        expect(
+          deep.equals(result, {'a': 'alpha', 2: 'two', '3b': 'threeB'}),
+          true,
+        );
       });
     });
   });

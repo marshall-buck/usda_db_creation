@@ -9,13 +9,13 @@ void main() {
   group('Nutrient class tests', () {
     group('toEntry()', () {
       test('Matches MapEntry<int, num>', () {
-        final nutrient = Nutrient(id: 1004, amount: .55);
+        const nutrient = Nutrient(id: 1004, amount: .55);
 
         final entry = nutrient.toEntry();
         expect(entry, isA<MapEntry<int, num>>());
       });
       test('Map equals entry', () {
-        final nutrient = Nutrient(id: 1004, amount: .55);
+        const nutrient = Nutrient(id: 1004, amount: .55);
         final entry = nutrient.toEntry();
         expect(entry.key, 1004);
         expect(entry.value, .55);
@@ -23,10 +23,9 @@ void main() {
     });
     group('toJson', () {
       test('Map entry will covert to json string without errors', () {
-        final nutrient = Nutrient(id: 1004, amount: .55);
-        final nutrient1 = Nutrient(id: 1005, amount: 10);
-        final nutrientsMap = {};
-        nutrientsMap.addEntries([nutrient.toJson(), nutrient1.toJson()]);
+        const nutrient = Nutrient(id: 1004, amount: .55);
+        const nutrient1 = Nutrient(id: 1005, amount: 10);
+        final nutrientsMap = <String, num>{}..addEntries([nutrient.toJson(), nutrient1.toJson()]);
 
         final jsonString = jsonEncode(nutrientsMap);
         expect(jsonString, isA<String>());

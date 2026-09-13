@@ -1,3 +1,4 @@
+/// String helpers used while parsing and indexing food descriptions.
 extension StringExtensions on String {
   /// Removes all non-alpha except dashes and parentheses,
   /// and numbers followed by a %.
@@ -12,10 +13,12 @@ extension StringExtensions on String {
   /// not in the set defined by [^\w()%\-] or a string that contains one or more
   /// digits followed by a percent sign.
   String removeUnwantedChars() {
-    final stringSanitizerRegEx = RegExp(r"[^\w()%\-\/]|(\d+%)");
+    final stringSanitizerRegEx = RegExp(r'[^\w()%\-\/]|(\d+%)');
 
     return replaceAllMapped(
-        stringSanitizerRegEx, (final match) => match.group(1) ?? '');
+      stringSanitizerRegEx,
+      (match) => match.group(1) ?? '',
+    );
   }
 
   /// Separates words with dashes or parentheses and forward slashes.
@@ -36,46 +39,43 @@ extension StringExtensions on String {
   /// Cleans up a sentence, removing all unwanted characters
   /// Returns a set of lowercased words to be indexed.
   Set<String> getWordsToIndex() {
-    final List<List<String>> words = [];
+    final words = <List<String>>[];
 
     for (final word in split(' ')) {
-      final String charDash = word.removeUnwantedChars().toLowerCase();
-      final List<String> splitWords =
-          charDash.stripDashedAndParenthesisAndForwardSlashesWord();
+      final charDash = word.removeUnwantedChars().toLowerCase();
+      final splitWords = charDash.stripDashedAndParenthesisAndForwardSlashesWord();
 
       if (splitWords.isNotEmpty) {
         words.add(splitWords);
       }
     }
-    final wordsSet = words.expand((final list) => list).toSet();
-    wordsSet.remove('');
+    final wordsSet = words.expand((list) => list).toSet()..remove('');
     return wordsSet;
   }
 
   /// Checks if [String] is in provided [List]
-  bool isStopWord(final List<String> stopWords) {
+  bool isStopWord(List<String> stopWords) {
     return stopWords.contains(this);
   }
 
   /// Checks if a [String] contains either digits followed by a %,
   /// 'or' a string of lowercase characters.
   bool isLowerCaseOrNumberWithPercent() {
-    final lowerCaseRegex = RegExp(r"^[a-z]+$");
-    final numberWithPercentRegex = RegExp(r"^\d+%$");
+    final lowerCaseRegex = RegExp(r'^[a-z]+$');
+    final numberWithPercentRegex = RegExp(r'^\d+%$');
 
-    return lowerCaseRegex.hasMatch(this) ||
-        numberWithPercentRegex.hasMatch(this);
+    return lowerCaseRegex.hasMatch(this) || numberWithPercentRegex.hasMatch(this);
   }
 
   /// Checks if [String] is a number followed by a `%` sign.
   bool isNumberWithPercent() {
-    final numberWithPercentRegex = RegExp(r"^\d+%$");
+    final numberWithPercentRegex = RegExp(r'^\d+%$');
     return numberWithPercentRegex.hasMatch(this);
   }
 
   /// Checks if string is a digit.
   bool isNumber() {
-    final numberRegex = RegExp(r"^\d+$");
+    final numberRegex = RegExp(r'^\d+$');
     return numberRegex.hasMatch(this);
   }
 
@@ -107,19 +107,20 @@ extension StringExtensions on String {
 
   List<String?> separateIntoPhrasesWithMinimumLength({
     // required final String sentence,
-    required final int minPhraseLength,
+    required int minPhraseLength,
   }) {
-    final Set<String> listOfPhrases = {};
+    final listOfPhrases = <String>{};
 
-    final List<String> wordList = split(' ');
+    final wordList = split(' ');
 
-    int length = wordList.join(' ').length;
+    var length = wordList.join(' ').length;
 
     while (length >= minPhraseLength) {
-      String phrase = wordList.removeAt(0);
+      final phraseBuffer = StringBuffer(wordList.removeAt(0));
 
       for (final word in wordList) {
-        phrase = '$phrase $word';
+        phraseBuffer.write(' $word');
+        final phrase = phraseBuffer.toString();
         if (phrase.length >= minPhraseLength) {
           listOfPhrases.add(phrase);
         }

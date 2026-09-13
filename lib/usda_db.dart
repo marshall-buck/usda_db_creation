@@ -4,6 +4,8 @@
 // 'dart run'. Not all methods in this file are used in the bin/usda_db_creation.dart
 // at the same time.
 
+import 'dart:io' show IOException;
+
 import 'package:usda_db_creation/autocomplete.dart';
 import 'package:usda_db_creation/db_parser.dart';
 import 'package:usda_db_creation/description_parser.dart';
@@ -18,12 +20,15 @@ import 'package:usda_db_creation/word_index.dart';
 /// Returns the length of the longest description.
 ///
 /// [dbParser] The [DBParser] object containing the original foods list.
-(int, DescriptionRecord?) getLongestDescription(
-    {required final DBParser dbParser}) {
+(int, DescriptionRecord?) getLongestDescription({
+  required DBParser dbParser,
+}) {
   final descriptions = DescriptionParser.createOriginalDescriptionRecords(
-      originalFoodsList: dbParser.originalFoodsList);
+    originalFoodsList: dbParser.originalFoodsList,
+  );
   return DescriptionParser.getLongestDescriptionRecord(
-      descriptions: descriptions);
+    descriptions: descriptions,
+  );
 }
 
 /// Returns the length of the shortest description in the provided DBParser object.
@@ -32,12 +37,15 @@ import 'package:usda_db_creation/word_index.dart';
 /// Returns the length of the shortest description.
 ///
 /// [dbParser] The [DBParser] object containing the original foods list.
-(num, DescriptionRecord?) getShortestDescription(
-    {required final DBParser dbParser}) {
+(num, DescriptionRecord?) getShortestDescription({
+  required DBParser dbParser,
+}) {
   final descriptions = DescriptionParser.createOriginalDescriptionRecords(
-      originalFoodsList: dbParser.originalFoodsList);
+    originalFoodsList: dbParser.originalFoodsList,
+  );
   return DescriptionParser.getShortestDescriptionRecord(
-      descriptions: descriptions);
+    descriptions: descriptions,
+  );
 }
 
 /// Creates the necessary database files based on the provided [DBParser] object.
@@ -71,37 +79,47 @@ import 'package:usda_db_creation/word_index.dart';
 /// Throws a [FormatException] if the [DBParser] object is not properly initialized.
 /// Throws an [IOException] if there is an error during file operations.
 
-Future<void> createDBFiles(
-    {required DBParser dbParser,
-    required FileService fileService,
-    bool extras = false}) async {
+Future<void> createDBFiles({
+  required DBParser dbParser,
+  required FileService fileService,
+  bool extras = false,
+}) async {
   if (extras) {
     final descriptions = DescriptionParser();
 
     final desMap = await descriptions.createDataStructure(
-        dbParser: dbParser, writeFile: true, returnData: true);
+      dbParser: dbParser,
+      writeFile: true,
+    );
     final wordIndex = WordIndexMap(desMap!);
     final wordIndexMap = await wordIndex.createDataStructure(
-        dbParser: dbParser, writeFile: true);
+      dbParser: dbParser,
+      writeFile: true,
+    );
     final substring = Substrings(wordIndexMap!);
     final substringMap = await substring.createDataStructure(
-        dbParser: dbParser, writeFile: true);
+      dbParser: dbParser,
+      writeFile: true,
+    );
     final hashTable = AutoCompleteHashTable(substringMap!);
     await hashTable.createDataStructure(dbParser: dbParser, writeFile: true);
 
     final db = DB(desMap);
-    db.createDataStructure(dbParser: dbParser, writeFile: true);
+    await db.createDataStructure(dbParser: dbParser);
   } else {
     final descriptions = DescriptionParser();
 
     final desMap = await descriptions.createDataStructure(
-        dbParser: dbParser, writeFile: false, returnData: true);
+      dbParser: dbParser,
+    );
     final wordIndex = WordIndexMap(desMap!);
     final wordIndexMap = await wordIndex.createDataStructure(
-        dbParser: dbParser, writeFile: false);
+      dbParser: dbParser,
+    );
     final substring = Substrings(wordIndexMap!);
     final substringMap = await substring.createDataStructure(
-        dbParser: dbParser, writeFile: false);
+      dbParser: dbParser,
+    );
     final hashTable = AutoCompleteHashTable(substringMap!);
     await hashTable.createDataStructure(dbParser: dbParser, writeFile: true);
 

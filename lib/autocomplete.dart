@@ -11,7 +11,7 @@ import 'package:usda_db_creation/file_service.dart';
 /// Typically the data would be written to one json file.
 /// and converted in to the data structure.
 /// /*Cspell:disable
-/// ```
+/// ```dart
 ///  {
 /// substringHash = {
 ///   'aba': 0,
@@ -28,16 +28,21 @@ import 'package:usda_db_creation/file_service.dart';
 /// ```
 ///  /*Cspell:enable
 class AutoCompleteHashData {
-  final Map<String, int> substringHash;
-  final Map<int, List<int>> indexHash;
-
+  /// Creates the autocomplete data from an already built substring and
+  /// index hash.
   AutoCompleteHashData({required this.substringHash, required this.indexHash});
 
-  /// Converts the properties to a Map<String, dynamic> for json serialization.
+  /// Maps each substring to the key of its index list in [indexHash].
+  final Map<String, int> substringHash;
+
+  /// Maps a hash key to the list of description indexes it resolves to.
+  final Map<int, List<int>> indexHash;
+
+  /// Converts the properties to a `Map<String, dynamic>` for json serialization.
   Map<String, dynamic> toJson() {
     return {
       'substringHash': substringHash,
-      'indexHash': indexHash.deepConvertMapKeyToString()
+      'indexHash': indexHash.deepConvertMapKeyToString(),
     };
   }
 }
@@ -59,9 +64,9 @@ class AutoCompleteHashData {
 /// The [createDataStructure] method is used to create the data structure and
 /// optionally write the data to a file.
 /// It takes a [DBParser] object as a parameter, which is used for file operations.
-/// The [returnData] parameter determines whether the method should return the
+/// The `returnData` parameter determines whether the method should return the
 /// created data or not.
-/// The [writeFile] parameter determines whether the method should write the
+/// The `writeFile` parameter determines whether the method should write the
 /// data to a file or not.
 ///
 /// The [_populateHashes] method is a private method that populates the [_substringHash]
@@ -74,8 +79,8 @@ class AutoCompleteHashData {
 /// the substring in the [_substringHash] map.
 ///
 /// The [_findHashKey] method is a static private method that finds the hash key
-/// for a given index list from a substring in the [hashTable].
-/// It iterates over the entries of the [hashTable] and compares the index list
+/// for a given index list from a substring in the `hashTable`.
+/// It iterates over the entries of the `hashTable` and compares the index list
 /// values with the given index list from the substring.
 /// If a match is found, it returns the hash key. If no match is found,
 /// it returns -1.
@@ -109,32 +114,35 @@ class AutoCompleteHashData {
 /// - [DBParser] The class used for file operations.
 /// - [DataStructure] The interface implemented by this class.
 /// - [FileService] The class used for file operations.
-class AutoCompleteHashTable implements DataStructure {
+class AutoCompleteHashTable implements DataStructure<AutoCompleteHashData?> {
+  /// Creates the hash table from a map of un-hashed substrings.
+  AutoCompleteHashTable(this.unHashedSubstrings);
   final Map<String, int> _substringHash = {};
   final Map<int, List<int>> _indexHash = {};
 
+  /// The substrings to hash, each mapped to its list of description indexes.
   final Map<String, List<int>> unHashedSubstrings;
-
-  AutoCompleteHashTable(this.unHashedSubstrings);
 
   /// Method to create the data and optionally write the files.
   @override
-  Future<AutoCompleteHashData?> createDataStructure(
-      {required DBParser dbParser,
-      bool returnData = true,
-      bool writeFile = false}) async {
+  Future<AutoCompleteHashData?> createDataStructure({
+    required DBParser dbParser,
+    bool returnData = true,
+    bool writeFile = false,
+  }) async {
     _populateHashes();
 
-    final AutoCompleteHashData data = AutoCompleteHashData(
+    final data = AutoCompleteHashData(
       substringHash: _substringHash,
       indexHash: _indexHash,
     );
 
     if (writeFile) {
       await dbParser.fileService.writeFileByType<Null, Map<String, dynamic>>(
-          fileName: FileService.fileNameAutocompleteHash,
-          convertKeysToStrings: false,
-          mapContents: data.toJson());
+        fileName: FileService.fileNameAutocompleteHash,
+        convertKeysToStrings: false,
+        mapContents: data.toJson(),
+      );
     }
 
     return returnData ? data : null;
@@ -153,15 +161,16 @@ class AutoCompleteHashTable implements DataStructure {
   /// _substringHash = { 'aba': 0, 'abap': 0, 'abapp': 1, 'abappl': 0, ... }
   ///
   /// _indexHash = { 0: [3, 4], 1: [1, 2, 3, 4], ...  }
-  /// ```
   /// /* Cspell: enable*/
   void _populateHashes() {
-    int count = 0;
+    var count = 0;
 
     for (final element in unHashedSubstrings.entries) {
-      final List<int> indexListValue = element.value;
-      final int hashKey = _findHashKey(
-          indexListFromSubstring: indexListValue, hashTable: _indexHash);
+      final indexListValue = element.value;
+      final hashKey = _findHashKey(
+        indexListFromSubstring: indexListValue,
+        hashTable: _indexHash,
+      );
 
       if (hashKey == -1) {
         _indexHash[count] = indexListValue;
@@ -176,13 +185,14 @@ class AutoCompleteHashTable implements DataStructure {
   }
 
   /// Finds the hash key for the given [indexListFromSubstring] and [hashTable].
-  static int _findHashKey(
-      {required final List<int> indexListFromSubstring,
-      required final Map<int, List<int>> hashTable}) {
+  static int _findHashKey({
+    required List<int> indexListFromSubstring,
+    required Map<int, List<int>> hashTable,
+  }) {
     for (final element in hashTable.entries) {
-      final int hashKey = element.key;
+      final hashKey = element.key;
 
-      final listEquals = ListEquality();
+      const listEquals = ListEquality<int>();
       if (listEquals.equals(element.value, indexListFromSubstring)) {
         return hashKey;
       }

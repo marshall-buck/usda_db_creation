@@ -6,14 +6,17 @@ import 'package:usda_db_creation/file_service.dart';
 class MockFileLoaderService extends Mock implements FileService {}
 
 late final MockFileLoaderService mockFileLoaderService;
+
+// The snake_case names below are used by every test file; renaming them is a
+// wider change than this lint is worth.
 // ignore_for_file: non_constant_identifier_names
-tear_down() {
+
+void tear_down() {
   reset(mockFileLoaderService);
 }
 
-set_up_all() {
+void set_up_all() {
   mockFileLoaderService = MockFileLoaderService();
-  final SplayTreeMap<String, List<int>> fallback =
-      SplayTreeMap<String, List<int>>((final a, final b) => a.compareTo(b));
+  final fallback = SplayTreeMap<String, List<int>>((a, b) => a.compareTo(b));
   registerFallbackValue(fallback);
 }

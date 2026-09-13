@@ -9,18 +9,21 @@ void main() {
         final nutrients = {'1004': 20, '1003': 10};
 
         final food = FoodModel(
-            id: 111111, description: 'Food Item', nutrientsMap: nutrients);
+          id: 111111,
+          description: 'Food Item',
+          nutrientsMap: nutrients,
+        );
 
         final expectation = {
           '111111': {
             'description': 'Food Item',
-            'nutrients': {'1004': 20, '1003': 10}
-          }
+            'nutrients': {'1004': 20, '1003': 10},
+          },
         };
 
         final res = food.toJson();
 
-        final d = DeepCollectionEquality();
+        const d = DeepCollectionEquality();
         expect(d.equals(res, expectation), true);
       });
     });

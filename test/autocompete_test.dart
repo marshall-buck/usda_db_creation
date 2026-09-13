@@ -9,36 +9,32 @@ import 'setup/mock_db.dart';
 import 'setup/setup.dart';
 
 void main() {
-  setUpAll(() {
-    set_up_all();
-  });
+  setUpAll(set_up_all);
 
-  tearDown(() {
-    tear_down();
-  });
+  tearDown(tear_down);
 
   group('AutoCompleteHashTable class tests', () {
     group('createAutocompleteHashTable() - ', () {
       test('hashes list correctly', () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final hash = AutoCompleteHashTable(mockUnHashedSubstrings);
 
         final res = await hash.createDataStructure(dbParser: dbParser);
-        print('res: ${res!.indexHash}');
+        expect(res, isNotNull);
 
-        final d = DeepCollectionEquality();
+        const d = DeepCollectionEquality();
 
         expect(
-            d.equals(res.substringHash, autoCompleteHashTable['substringHash']),
-            true);
+          d.equals(res!.substringHash, autoCompleteHashTable['substringHash']),
+          true,
+        );
         expect(
-            d.equals(res.indexHash, autoCompleteHashTable['indexHash']), true);
+          d.equals(res.indexHash, autoCompleteHashTable['indexHash']),
+          true,
+        );
       });
     });
   });
@@ -46,19 +42,18 @@ void main() {
     group('toJson() - ', () {
       test('converts all keys to strings', () {
         final data = AutoCompleteHashData(
-            substringHash:
-                autoCompleteHashTable['substringHash'] as Map<String, int>,
-            indexHash:
-                autoCompleteHashTable['indexHash'] as Map<int, List<int>>);
+          substringHash: autoCompleteHashTable['substringHash'] as Map<String, int>,
+          indexHash: autoCompleteHashTable['indexHash'] as Map<int, List<int>>,
+        );
 
         final json = data.toJson();
-        final index = json['indexHash'];
-        index.keys.forEach((key) {
+        final index = json['indexHash']! as Map<String, dynamic>;
+        for (final key in index.keys) {
           expect(key, isA<String>());
-        });
-        index.values.forEach((value) {
+        }
+        for (final value in index.values) {
           expect(value, isA<List<int>>());
-        });
+        }
       });
     });
   });
@@ -110,5 +105,5 @@ const Map<String, dynamic> autoCompleteHashTable = {
     0: [3],
     1: [3, 4],
     2: [1, 2, 3, 4],
-  }
+  },
 };

@@ -10,77 +10,87 @@ import 'package:usda_db_creation/nutrient.dart';
 /// Class to create the main database of food items and nutrient information.
 /// The instance needs to be initialized with a map of
 /// parsed descriptions [descriptionMap].
-class DB implements DataStructure {
-  final Map<int, String> descriptionMap;
-
+class DB implements DataStructure<Map<String, dynamic>?> {
+  /// Creates a [DB] backed by the already parsed [descriptionMap].
   DB(this.descriptionMap);
+
+  /// The parsed descriptions, keyed by food id.
+  final Map<int, String> descriptionMap;
 
   /// Creates the database data structure and writes it to a file,
   /// if [writeFile] is true.
   /// Returns the data structure if [returnData] is true.
   @override
-  Future<Map<String, dynamic>?> createDataStructure(
-      {required DBParser dbParser,
-      bool returnData = false,
-      bool writeFile = true}) async {
+  Future<Map<String, dynamic>?> createDataStructure({
+    required DBParser dbParser,
+    bool returnData = false,
+    bool writeFile = true,
+  }) async {
     final foodsList = dbParser.originalFoodsList;
 
-    final Map<String, dynamic> data = dbParser.createFoodsMapDB(
-        getFoodsList: foodsList, finalDescriptionRecordsMap: descriptionMap);
+    final data = dbParser.createFoodsMapDB(
+      getFoodsList: foodsList,
+      finalDescriptionRecordsMap: descriptionMap,
+    );
 
     if (writeFile) {
       await dbParser.fileService.writeFileByType<Null, Map<String, dynamic>>(
-          fileName: FileService.fileNameFoodsDatabase,
-          convertKeysToStrings: false,
-          mapContents: data);
+        fileName: FileService.fileNameFoodsDatabase,
+        convertKeysToStrings: false,
+        mapContents: data,
+      );
     }
     return returnData ? data : null;
   }
 }
 
-/// A class that represents a parser for the [original_usda.json].
+/// A class that represents a parser for the `original_usda.json` file.
 /// It is used to extract information and perform various operations on the data.
-/// The instance needs to be initialized with the [original_usda.json] file,
+/// The instance needs to be initialized with the `original_usda.json` file,
 ///  with [DBParser.init]
 class DBParser {
+  /// Opens `original_usda.json`  and creates a map.
+  DBParser.init({required this.fileService, required String filePath}) {
+    final file = fileService.loadData(filePath: filePath);
+    _originalDBMap = jsonDecode(file) as Map<dynamic, dynamic>;
+  }
+
+  /// The service used to read the source file and write the generated files.
   FileService fileService;
   Map<dynamic, dynamic>? _originalDBMap;
 
-  /// Opens [original_usda.json]  and creates a map.
-  DBParser.init({required this.fileService, required final String filePath}) {
-    final file = fileService.loadData(filePath: filePath);
-    _originalDBMap = jsonDecode(file);
-  }
-
-  /// [List] of foods from [_originalDBMap.json].
-  List<dynamic> get originalFoodsList => _originalDBMap?['SRLegacyFoods'];
+  /// [List] of foods from `original_usda.json`.
+  List<dynamic> get originalFoodsList => _originalDBMap?['SRLegacyFoods'] as List<dynamic>;
 
   /// Method to create the map that wil be used for the foods database.
   /// Returns:
   /// { id: { description,  nutrients }, ... }
-  Map<String, dynamic> createFoodsMapDB(
-      {required final List<dynamic> getFoodsList,
-      required final Map<int, String> finalDescriptionRecordsMap}) {
-    final Map<String, dynamic> foodsMap = {};
+  Map<String, dynamic> createFoodsMapDB({
+    required List<dynamic> getFoodsList,
+    required Map<int, String> finalDescriptionRecordsMap,
+  }) {
+    final foodsMap = <String, dynamic>{};
 
     for (final food in getFoodsList) {
-      final int foodId = food['fdcId'];
+      final foodItem = food as Map<dynamic, dynamic>;
+      final foodId = foodItem['fdcId'] as int;
       if (!finalDescriptionRecordsMap.containsKey(foodId)) {
         continue;
       }
 
-      final String foodDescription = finalDescriptionRecordsMap[foodId]!;
+      final foodDescription = finalDescriptionRecordsMap[foodId]!;
 
-      final foodNutrients = food['foodNutrients'];
+      final foodNutrients = foodItem['foodNutrients'] as List<dynamic>;
 
       final nutrientsList = createNutrientsMap(listOfNutrients: foodNutrients);
 
       final foodModel = FoodModel(
-          id: foodId,
-          description: foodDescription,
-          nutrientsMap: nutrientsList);
+        id: foodId,
+        description: foodDescription,
+        nutrientsMap: nutrientsList,
+      );
 
-      final Map<String, dynamic> foodModelJson = foodModel.toJson();
+      final foodModelJson = foodModel.toJson();
 
       foodsMap.addAll(foodModelJson);
     }
@@ -93,27 +103,28 @@ class DBParser {
   /// Parameters:
   /// [listOfNutrients] - the list of nutrients from a food item.
   ///
-  /// Returns: Map<String, num> where each key is a nutrient id and each
+  /// Returns: `Map<String, num>` where each key is a nutrient id and each
   /// value is the amount.
   Map<String, num> createNutrientsMap({
-    required final List<dynamic> listOfNutrients,
+    required List<dynamic> listOfNutrients,
   }) {
-    final Map<String, num> nutrientsMap = {};
+    final nutrientsMap = <String, num>{};
 
-    for (int i = 0; i < listOfNutrients.length; i++) {
-      final Map<String, dynamic> originalNutrient = listOfNutrients[i];
+    for (var i = 0; i < listOfNutrients.length; i++) {
+      final originalNutrient = listOfNutrients[i] as Map<String, dynamic>;
+      final nutrientJson = originalNutrient['nutrient'] as Map<String, dynamic>;
 
-      final int nutrientId = originalNutrient['nutrient']['id'] ?? 9999;
+      final nutrientId = (nutrientJson['id'] as int?) ?? 9999;
       if (!_findNutrient(nutrientId)) continue;
 
-      final String unit = originalNutrient['nutrient']['unitName'];
-      final String originalNutrientUnit =
-          Nutrient.originalNutrientTableEdit[nutrientId]!['unit']!;
+      final unit = nutrientJson['unitName'] as String;
+      final originalNutrientUnit = Nutrient.originalNutrientTableEdit[nutrientId]!['unit']!;
       if (unit.toLowerCase() != originalNutrientUnit.toLowerCase()) {
         throw Exception(
-            'unit mismatch id: $nutrientId unit: $unit \n  originalNutrient: $originalNutrient');
+          'unit mismatch id: $nutrientId unit: $unit \n  originalNutrient: $originalNutrient',
+        );
       }
-      final num amount = originalNutrient['amount'] ?? 0.0;
+      final amount = (originalNutrient['amount'] as num?) ?? 0.0;
       final nutrient = Nutrient(
         id: nutrientId,
         amount: amount,
@@ -133,26 +144,28 @@ class DBParser {
   /// [nutrientId] - the id of the nutrient to be included.
   ///
   /// Returns [bool].
-  bool _findNutrient(final int nutrientId) {
+  bool _findNutrient(int nutrientId) {
     return Nutrient.keepTheseNutrients.contains(nutrientId);
   }
 
   /// Creates a set of id's from the nutrients in hte original database.
   /// This is used to create the `nutrientIds] property
   /// in the 'global_const.dart' file.
-  static Set<int> findAllNutrientIds(
-      {required final Map<int, String> finalDescriptionRecordsMap,
-      required final List<dynamic> originalFoodsList}) {
-    final Set<int> nutrientIds = {};
+  static Set<int> findAllNutrientIds({
+    required Map<int, String> finalDescriptionRecordsMap,
+    required List<dynamic> originalFoodsList,
+  }) {
+    final nutrientIds = <int>{};
     for (final food in originalFoodsList) {
-      final int foodId = food['fdcId'];
+      final foodItem = food as Map<dynamic, dynamic>;
+      final foodId = foodItem['fdcId'] as int;
       if (!finalDescriptionRecordsMap.containsKey(foodId)) {
         continue;
       }
-      final foodNutrients = food['foodNutrients'];
+      final foodNutrients = foodItem['foodNutrients'] as List<dynamic>;
       for (final nutrient in foodNutrients) {
-        final int nutrientId = nutrient['nutrient']['id'];
-        nutrientIds.add(nutrientId);
+        final nutrientJson = (nutrient as Map<dynamic, dynamic>)['nutrient'] as Map<dynamic, dynamic>;
+        nutrientIds.add(nutrientJson['id'] as int);
       }
     }
     return nutrientIds;
@@ -168,14 +181,13 @@ class DBParser {
   /// Returns:
   /// {"category1": 1, "category2": 2, ..., "total": 3}
   Map<String, int> getFoodCategories() {
-    final Map<String, int> categories = {};
-    int count = 0;
+    final categories = <String, int>{};
+    var count = 0;
     for (final food in originalFoodsList) {
-      final foodCategory = food['foodCategory'];
-      final foodCategoryDescription = foodCategory['description'];
+      final foodCategory = (food as Map<dynamic, dynamic>)['foodCategory'] as Map<dynamic, dynamic>;
+      final foodCategoryDescription = foodCategory['description'] as String;
       if (categories.containsKey(foodCategoryDescription)) {
-        categories[foodCategoryDescription] =
-            categories[foodCategoryDescription]! + 1;
+        categories[foodCategoryDescription] = categories[foodCategoryDescription]! + 1;
         count++;
       } else {
         categories[foodCategoryDescription] = 1;

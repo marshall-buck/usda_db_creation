@@ -6,12 +6,12 @@ void main() {
   group('StringExtensions Unit Tests', () {
     group('removeUnwantedChars()', () {
       test(' removes unwanted characters', () {
-        expect("he  llo!#!#".removeUnwantedChars(), 'hello');
+        expect('he  llo!#!#'.removeUnwantedChars(), 'hello');
         expect('  hello-bob '.removeUnwantedChars(), 'hello-bob');
         expect('  hello)bob '.removeUnwantedChars(), 'hello)bob');
         expect('  hello(bob '.removeUnwantedChars(), 'hello(bob');
         expect('  (hello ) '.removeUnwantedChars(), '(hello)');
-        expect('hello@\$-!@#bob '.removeUnwantedChars(), 'hello-bob');
+        expect(r'hello@$-!@#bob '.removeUnwantedChars(), 'hello-bob');
         expect('  hello '.removeUnwantedChars(), 'hello');
         expect('  hel  lo'.removeUnwantedChars(), 'hello');
         expect(''.removeUnwantedChars(), '');
@@ -23,28 +23,41 @@ void main() {
 
     group('stripDashedAndParenthesisWord()', () {
       test(' separates words with dashes or parentheses', () {
-        expect('hello-there'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['hello', 'there']);
-        expect('hello'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['hello']);
-        expect('ready-to-bake'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['ready', 'to', 'bake']);
-        expect('-to-bake'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['', 'to', 'bake']);
-        expect('-to-bake-'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['', 'to', 'bake', '']);
-        expect('syrup/caramel'.stripDashedAndParenthesisAndForwardSlashesWord(),
-            ['syrup', 'caramel']);
+        expect(
+          'hello-there'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['hello', 'there'],
+        );
+        expect(
+          'hello'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['hello'],
+        );
+        expect(
+          'ready-to-bake'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['ready', 'to', 'bake'],
+        );
+        expect(
+          '-to-bake'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['', 'to', 'bake'],
+        );
+        expect(
+          '-to-bake-'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['', 'to', 'bake', ''],
+        );
+        expect(
+          'syrup/caramel'.stripDashedAndParenthesisAndForwardSlashesWord(),
+          ['syrup', 'caramel'],
+        );
       });
     });
 
     group('getWordsToIndex()', () {
       test('Sentence should be stripped of all non alpha chars', () {
-        final sentence1 = 'Doughnuts, yeast-Leavened, with jelly filling';
-        expect(sentence1.getWordsToIndex(),
-            {'doughnuts', 'yeast', 'leavened', 'with', 'jelly', 'filling'});
-        final sentence2 =
-            'Muffins, plain, prepared from recipe, made with low fat (2%) milk';
+        const sentence1 = 'Doughnuts, yeast-Leavened, with jelly filling';
+        expect(
+          sentence1.getWordsToIndex(),
+          {'doughnuts', 'yeast', 'leavened', 'with', 'jelly', 'filling'},
+        );
+        const sentence2 = 'Muffins, plain, prepared from recipe, made with low fat (2%) milk';
 
         expect(sentence2.getWordsToIndex(), {
           'muffins',
@@ -57,30 +70,30 @@ void main() {
           'low',
           'fat',
           '2%',
-          'milk'
+          'milk',
         });
 
-        final sentence3 = 'Puff pastry, frozen, ready- -to-bake ';
+        const sentence3 = 'Puff pastry, frozen, ready- -to-bake ';
 
-        expect(sentence3.getWordsToIndex(),
-            {'puff', 'pastry', 'frozen', 'ready', 'to', 'bake'});
+        expect(
+          sentence3.getWordsToIndex(),
+          {'puff', 'pastry', 'frozen', 'ready', 'to', 'bake'},
+        );
       });
     });
 
     group('isStopWord()', () {
       test('returns true if the word is a stop word', () {
         final stopWords = ['the', 'and', 'or'];
-        final input1 = 'the';
-        final input2 = 'apple';
+        const input1 = 'the';
+        const input2 = 'apple';
 
         expect(input1.isStopWord(stopWords), isTrue);
         expect(input2.isStopWord(stopWords), isFalse);
       });
     });
     group('isLowerCaseOrNumberWithPercent()', () {
-      test(
-          'returns true if the string is lowercase char or a number followed by percent',
-          () {
+      test('returns true if the string is lowercase char or a number followed by percent', () {
         expect('a'.isLowerCaseOrNumberWithPercent(), true);
         expect('b'.isLowerCaseOrNumberWithPercent(), true);
         expect('1'.isLowerCaseOrNumberWithPercent(), false);
@@ -90,13 +103,13 @@ void main() {
     });
     group('isNumberWithPercent()', () {
       test('returns true is number followed by percent', () {
-        final number = '2';
-        final number1 = '20';
-        final number2 = '200';
-        final percent = '2%';
-        final percent1 = '20%';
-        final percent2 = '200%';
-        final notNumber = '2%b';
+        const number = '2';
+        const number1 = '20';
+        const number2 = '200';
+        const percent = '2%';
+        const percent1 = '20%';
+        const percent2 = '200%';
+        const notNumber = '2%b';
 
         expect(number.isNumberWithPercent(), false);
         expect(number1.isNumberWithPercent(), false);
@@ -126,14 +139,14 @@ void main() {
           'oak stood, surrounded by natures.',
           'stood, surrounded by',
           'stood, surrounded by natures.',
-          'surrounded by natures.'
+          'surrounded by natures.',
         ];
         /* cSpell:enable */
         final res = sentence49.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 20,
         );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
 
         expect(listEquals.equals(expectation, res), true);
       });
@@ -148,36 +161,34 @@ void main() {
           minPhraseLength: 20,
         );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
         expect(listEquals.equals(expectation, res), true);
       });
       test('String of equal length + 1 to minLength returns correctly', () {
         const expectation = ['Quietly, an old oaK T'];
 
-        final res =
-            'Quietly, an old oaK T'.separateIntoPhrasesWithMinimumLength(
+        final res = 'Quietly, an old oaK T'.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 20,
         );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
         expect(listEquals.equals(expectation, res), true);
       });
       test('String of equal length - 1 to minLength returns correctly', () {
         final res = 'Quietly, an old oak'.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 20,
         );
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
         expect(listEquals.equals([], res), true);
         expect(res.isEmpty, true);
       });
       test('String of less than to minLength returns correctly', () {
         // 'Quietly, an old oak stood, surrounded by natures.'
 
-        final res = 'George Weston Bakeries, Thomas English Muffins'
-            .separateIntoPhrasesWithMinimumLength(
+        final res = 'George Weston Bakeries, Thomas English Muffins'.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 48,
         );
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
         expect(listEquals.equals([], res), true);
         expect(res.isEmpty, true);
       });
@@ -187,14 +198,13 @@ void main() {
         const expectation = [
           'In a distant galaxy, stars shimmered like diamonds.',
           'a distant galaxy, stars shimmered like diamonds.',
-          'distant galaxy, stars shimmered like diamonds.'
+          'distant galaxy, stars shimmered like diamonds.',
         ];
-        final res = 'In a distant galaxy, stars shimmered like diamonds.'
-            .separateIntoPhrasesWithMinimumLength(
+        final res = 'In a distant galaxy, stars shimmered like diamonds.'.separateIntoPhrasesWithMinimumLength(
           minPhraseLength: 45,
         );
 
-        final listEquals = ListEquality();
+        const listEquals = ListEquality<String?>();
         expect(listEquals.equals(expectation, res), true);
       });
     });

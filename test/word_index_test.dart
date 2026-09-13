@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:usda_db_creation/db_parser.dart';
-import 'package:usda_db_creation/description_parser.dart';
 import 'package:usda_db_creation/word_index.dart';
 
 import 'setup/mock_data.dart';
@@ -12,13 +11,9 @@ import 'setup/mock_db.dart';
 import 'setup/setup.dart';
 
 void main() {
-  setUpAll(() {
-    set_up_all();
-  });
+  setUpAll(set_up_all);
 
-  tearDown(() {
-    tear_down();
-  });
+  tearDown(tear_down);
   group('WordIndexMap class tests', () {
     group('createDataStructure()', () {
       test('createDataStructure should return the correct index map', () async {
@@ -46,30 +41,24 @@ void main() {
           'recipe': [167514],
           'refrigerated': [167512, 167513],
           'rolls': [167513],
-          'shake': [167514]
+          'shake': [167514],
         };
 
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(mockDescriptionMap);
 
         final indexMap = await words.createDataStructure(dbParser: dbParser);
 
-        final deepEquals = const DeepCollectionEquality();
+        const deepEquals = DeepCollectionEquality();
         expect(deepEquals.equals(expectation, indexMap), true);
       });
       test('createDataStructure should handle empty description map', () async {
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
-        final DescriptionMap descriptionMap = {};
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final descriptionMap = <int, String>{};
         final words = WordIndexMap(descriptionMap);
 
         final indexMap = await words.createDataStructure(dbParser: dbParser);
@@ -79,19 +68,15 @@ void main() {
         expect(indexMap!.isEmpty, true);
       });
 
-      test('createDataStructure should handle description map with stop words',
-          () async {
+      test('createDataStructure should handle description map with stop words', () async {
         final descriptionMap = {
           167782: 'apple is a fruit',
           173175: 'apples are delicious',
           171686: 'orange being is a citrus fruit',
         };
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(descriptionMap);
 
         final indexMap = await words.createDataStructure(dbParser: dbParser);
@@ -104,21 +89,16 @@ void main() {
         expect(indexMap?['are'], isNull);
         expect(indexMap?['being'], isNull);
       });
-      test(
-          'createDataStructure should strip remaining parentheses and numbers and /es',
-          () async {
+      test('createDataStructure should strip remaining parentheses and numbers and /es', () async {
         final descriptionMap = {
           167782: 'apple 18fat is a (fruit 1/8',
           173175: 'apples are delicious) 200 aa 11g',
           171686: 'orange being is a citrus/fruit 100%',
         };
 
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
         final words = WordIndexMap(descriptionMap);
 
         final indexMap = await words.createDataStructure(dbParser: dbParser);
@@ -133,81 +113,77 @@ void main() {
         expect(indexMap?['(fruit'], isNull);
         expect(indexMap?['delicious)'], isNull);
       });
-      test('fileLoader writeFileByType is called when writeFile is true',
-          () async {
+      test('fileLoader writeFileByType is called when writeFile is true', () async {
         final descriptionMap = {
           167782: 'apple 18fat is a (fruit 1/8',
           173175: 'apples are delicious) 200 aa 11g',
           171686: 'orange being is a citrus/fruit 100%',
         };
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        when(() => mockFileLoaderService
-                .writeFileByType<Null, SplayTreeMap<String, List<int>>>(
-              fileName: any<String>(
-                named: 'fileName',
-              ),
-              convertKeysToStrings: false,
-              mapContents:
-                  any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
-            )).thenAnswer((_) async {});
+        when(
+          () => mockFileLoaderService.writeFileByType<Null, SplayTreeMap<String, List<int>>>(
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            convertKeysToStrings: false,
+            mapContents: any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
+          ),
+        ).thenAnswer((_) async {});
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final words = WordIndexMap(descriptionMap);
 
         await words.createDataStructure(
-            dbParser: dbParser, writeFile: true, returnData: false);
+          dbParser: dbParser,
+          writeFile: true,
+          returnData: false,
+        );
 
-        verify(() => mockFileLoaderService
-                .writeFileByType<Null, SplayTreeMap<String, List<int>>>(
-              fileName: any<String>(named: 'fileName'),
-              convertKeysToStrings: false,
-              mapContents:
-                  any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
-            )).called(1);
+        verify(
+          () => mockFileLoaderService.writeFileByType<Null, SplayTreeMap<String, List<int>>>(
+            fileName: any<String>(named: 'fileName'),
+            convertKeysToStrings: false,
+            mapContents: any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
+          ),
+        ).called(1);
       });
-      test('fileLoader methods are not called when writeFile is false',
-          () async {
+      test('fileLoader methods are not called when writeFile is false', () async {
         final descriptionMap = {
           167782: 'apple 18fat is a (fruit 1/8',
           173175: 'apples are delicious) 200 aa 11g',
           171686: 'orange being is a citrus/fruit 100%',
         };
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        when(() => mockFileLoaderService
-                .writeFileByType<Null, SplayTreeMap<String, List<int>>>(
-              fileName: any<String>(
-                named: 'fileName',
-              ),
-              convertKeysToStrings: false,
-              mapContents:
-                  any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
-            )).thenAnswer((_) async {});
+        when(
+          () => mockFileLoaderService.writeFileByType<Null, SplayTreeMap<String, List<int>>>(
+            fileName: any<String>(
+              named: 'fileName',
+            ),
+            convertKeysToStrings: false,
+            mapContents: any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
+          ),
+        ).thenAnswer((_) async {});
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final words = WordIndexMap(descriptionMap);
 
         await words.createDataStructure(
-            dbParser: dbParser, writeFile: false, returnData: true);
+          dbParser: dbParser,
+        );
 
-        verifyNever(() => mockFileLoaderService
-                .writeFileByType<Null, SplayTreeMap<String, List<int>>>(
-              fileName: any<String>(named: 'fileName'),
-              convertKeysToStrings: false,
-              mapContents:
-                  any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
-            ));
+        verifyNever(
+          () => mockFileLoaderService.writeFileByType<Null, SplayTreeMap<String, List<int>>>(
+            fileName: any<String>(named: 'fileName'),
+            convertKeysToStrings: false,
+            mapContents: any<SplayTreeMap<String, List<int>>>(named: 'mapContents'),
+          ),
+        );
       });
       test('Throws ArgumentError', () async {
         final descriptionMap = {
@@ -215,23 +191,20 @@ void main() {
           173175: 'apples are delicious) 200 aa 11g',
           171686: 'orange being is a citrus/fruit 100%',
         };
-        when(() => mockFileLoaderService.loadData(filePath: 'fake'))
-            .thenReturn(mockUsdaFile);
-        when(() => mockFileLoaderService.folderHash)
-            .thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
+        when(() => mockFileLoaderService.loadData(filePath: 'fake')).thenReturn(mockUsdaFile);
+        when(() => mockFileLoaderService.folderHash).thenReturn(DateTime.now().microsecondsSinceEpoch.toString());
 
-        final dbParser =
-            DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
+        final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final words = WordIndexMap(descriptionMap);
 
         expect(
-            () async => await words.createDataStructure(
-                  dbParser: dbParser,
-                  writeFile: false,
-                  returnData: false,
-                ),
-            throwsA(isA<ArgumentError>()));
+          () async => await words.createDataStructure(
+            dbParser: dbParser,
+            returnData: false,
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
       });
     });
   });

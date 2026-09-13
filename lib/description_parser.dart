@@ -1,10 +1,13 @@
 import 'package:usda_db_creation/data_structure.dart';
 import 'package:usda_db_creation/db_parser.dart';
+import 'package:usda_db_creation/extensions/string_ext.dart';
 import 'package:usda_db_creation/file_service.dart';
 import 'package:usda_db_creation/global_const.dart';
-import 'package:usda_db_creation/extensions/string_ext.dart';
 
+/// A single `(id, description)` pair parsed from the original foods list.
 typedef DescriptionRecord = (int, String);
+
+/// A map of food id to its parsed description.
 typedef DescriptionMap = Map<int, String>;
 
 /// A class that parses descriptions and creates a [DescriptionMap] from the
@@ -27,14 +30,14 @@ typedef DescriptionMap = Map<int, String>;
 /// ```
 ///
 /// The [createDataStructure] method takes the following parameters:
-/// - [dbParser] An instance of [DBParser] used to parse the original foods list.
-/// - [returnData] A boolean indicating whether to return the description map
+/// - `dbParser` An instance of [DBParser] used to parse the original foods list.
+/// - `returnData` A boolean indicating whether to return the description map
 /// or not. Default is `true`.
-/// - [writeFile] A boolean indicating whether to write the description map to
+/// - `writeFile` A boolean indicating whether to write the description map to
 /// a file or not. Default is `false`.
 ///
 /// The [createDataStructure] method returns a [Future] of [DescriptionMap] or
-/// `null` if [returnData] is `false`.
+/// `null` if `returnData` is `false`.
 ///
 /// The [DescriptionParser] class also provides several helper methods:
 /// - [createOriginalDescriptionRecords] Parses the original foods list to
@@ -44,7 +47,7 @@ typedef DescriptionMap = Map<int, String>;
 /// - [parseDescriptionsFromTxtFile] Parses a description map from a text file.
 /// - [_parseDescriptionRecordFromString] Helper method to parse a description
 /// record from a line in a text file.
-/// - [getLongestDescription] Helper method to get the length of the longest
+/// - [getLongestDescriptionRecord] Helper method to get the length of the longest
 /// description in a list of [DescriptionRecord]s.
 /// - [createRepeatedPhraseFrequencyMap] Helper method to create a frequency
 /// map of repeated phrases in a list of descriptions.
@@ -58,13 +61,13 @@ typedef DescriptionMap = Map<int, String>;
 /// The [DescriptionMap] type should be a [Map] with keys of type [int]
 /// and values of type [String].
 
-class DescriptionParser implements DataStructure {
+class DescriptionParser implements DataStructure<DescriptionMap?> {
   /// Creates [DescriptionMap] from the original foods list.
   ///
   /// This is the only method that needs to be called to create the final
   /// description map.
   /// All other methods are helper methods.
-  /// ```
+  /// ```dart
   /// final dbParser = DBParser();
   /// final descriptionParser = DescriptionParser();
   /// final descriptionMap = await descriptionParser.createDataStructure(
@@ -84,32 +87,31 @@ class DescriptionParser implements DataStructure {
     bool writeFile = false,
   }) async {
     if (!returnData && !writeFile) {
-      throw (ArgumentError('Both returnStructure and writeFile are false'));
+      throw ArgumentError('Both returnStructure and writeFile are false');
     }
-    final List<DescriptionRecord> originalDescriptions =
-        createOriginalDescriptionRecords(
-            originalFoodsList: dbParser.originalFoodsList);
+    final originalDescriptions = createOriginalDescriptionRecords(
+      originalFoodsList: dbParser.originalFoodsList,
+    );
 
-    final List<DescriptionRecord> parsedDescriptions =
-        removeUnwantedPhrasesFromDescriptions(
-            descriptions: originalDescriptions,
-            unwantedPhrases: unwantedPhrases);
+    final parsedDescriptions = removeUnwantedPhrasesFromDescriptions(
+      descriptions: originalDescriptions,
+      unwantedPhrases: unwantedPhrases,
+    );
 
-    final DescriptionMap descriptionMap = {};
+    final descriptionMap = <int, String>{};
 
-    for (final DescriptionRecord line in parsedDescriptions) {
-      final MapEntry<int, String> entry = MapEntry(line.$1, line.$2);
+    for (final line in parsedDescriptions) {
+      final entry = MapEntry<int, String>(line.$1, line.$2);
 
       descriptionMap[entry.key] = entry.value;
     }
     if (writeFile) {
-      await dbParser.fileService
-          .writeFileByType<List<DescriptionRecord>, Map<int, String>>(
-              fileName: FileService
-                  .fileNameFinalDescriptions, //fileNameFinalDescriptions,
-              convertKeysToStrings: true,
-              listContents: parsedDescriptions,
-              mapContents: descriptionMap);
+      await dbParser.fileService.writeFileByType<List<DescriptionRecord>, Map<int, String>>(
+        fileName: FileService.fileNameFinalDescriptions, //fileNameFinalDescriptions,
+        convertKeysToStrings: true,
+        listContents: parsedDescriptions,
+        mapContents: descriptionMap,
+      );
     }
 
     return returnData ? descriptionMap : null;
@@ -122,7 +124,7 @@ class DescriptionParser implements DataStructure {
   /// This is the first method called in the process of creating the final database.
   ///
   /// The list will be filtered to remove any unwanted food categories,
-  /// from the [excludedCategories] list.  The list is defined in [global_const.dart].
+  /// from the [excludedCategories] list.  The list is defined in `global_const.dart`.
   ///
   /// Parameters:
   /// [originalFoodsList] - the list of food items from the original_usda.json file.
@@ -130,15 +132,17 @@ class DescriptionParser implements DataStructure {
   /// Returns: [DescriptionRecord]
   ///  [(id, description), ...]
 
-  static List<DescriptionRecord> createOriginalDescriptionRecords(
-      {required final List<dynamic> originalFoodsList}) {
+  static List<DescriptionRecord> createOriginalDescriptionRecords({
+    required List<dynamic> originalFoodsList,
+  }) {
     return originalFoodsList
-        .map((final food) {
-          final int id = food["fdcId"];
-          assert(food["fdcId"] != null);
+        .map((food) {
+          final foodItem = food as Map<dynamic, dynamic>;
+          assert(foodItem['fdcId'] != null, 'Food item is missing an fdcId');
+          final id = foodItem['fdcId'] as int;
 
-          if (!isExcludedCategory(foodItem: food)) {
-            return (id, food["description"] as String);
+          if (!isExcludedCategory(foodItem: foodItem)) {
+            return (id, foodItem['description'] as String);
           }
           // return null; // Add this line to handle the case where the return value may be null.
         })
@@ -152,11 +156,11 @@ class DescriptionParser implements DataStructure {
   /// Returns:
   ///  [(id, description), ...]
   static List<DescriptionRecord> removeUnwantedPhrasesFromDescriptions({
-    required final List<DescriptionRecord> descriptions,
-    required final List<String> unwantedPhrases,
+    required List<DescriptionRecord> descriptions,
+    required List<String> unwantedPhrases,
   }) {
-    return descriptions.map((final record) {
-      String description = record.$2;
+    return descriptions.map((record) {
+      var description = record.$2;
       for (final phrase in unwantedPhrases) {
         if (description.contains(phrase)) {
           description = description.replaceAll(phrase, '');
@@ -169,18 +173,16 @@ class DescriptionParser implements DataStructure {
   /// Helper method to create a [DescriptionMap] from a txt file at [filePath].
   /// The text file must be in the format of 1 (id, description) per line
   /// (167521, Pie Crust, Cookie-type, Chocolate, Ready Crust)
-  static DescriptionMap parseDescriptionsFromTxtFile(
-      {required final String filePath,
-      required final FileService fileService}) {
-    final String fileContents = fileService.loadData(filePath: filePath);
-    final List<String> lines = fileContents.split('\n');
+  static DescriptionMap parseDescriptionsFromTxtFile({
+    required String filePath,
+    required FileService fileService,
+  }) {
+    final fileContents = fileService.loadData(filePath: filePath);
+    final lines = fileContents.split('\n')..removeWhere((line) => line.isEmpty);
 
-    lines.removeWhere(
-        (final line) => line.isEmpty); // Add this line to remove empty lines.
-    final Map<int, String> descriptionMap = {};
+    final descriptionMap = <int, String>{};
     for (final line in lines) {
-      final MapEntry<int, String> entry =
-          _parseDescriptionRecordFromString(line);
+      final entry = _parseDescriptionRecordFromString(line);
 
       descriptionMap[entry.key] = entry.value;
     }
@@ -191,22 +193,23 @@ class DescriptionParser implements DataStructure {
   /// The line must be in the format of 1 (id, description) per line
   /// (167521, Pie Crust, Cookie-type, Chocolate, Ready Crust).
   static MapEntry<int, String> _parseDescriptionRecordFromString(
-      final String line) {
-    final int id = int.parse(line.substring(1, 7));
-    final String description = line.substring(9, line.length - 1);
+    String line,
+  ) {
+    final id = int.parse(line.substring(1, 7));
+    final description = line.substring(9, line.length - 1);
 
     return MapEntry(id, description);
   }
 
   /// Helper Method to get the longest description in a list of [DescriptionRecord]s.
   static (int, DescriptionRecord?) getLongestDescriptionRecord({
-    required final List<DescriptionRecord> descriptions,
+    required List<DescriptionRecord> descriptions,
   }) {
     DescriptionRecord? longestRecord;
-    int maxLength = 0;
+    var maxLength = 0;
 
-    for (final DescriptionRecord currentRecord in descriptions) {
-      final int currentLength = currentRecord.$2.length;
+    for (final currentRecord in descriptions) {
+      final currentLength = currentRecord.$2.length;
       if (currentLength > maxLength) {
         maxLength = currentLength;
         longestRecord = currentRecord;
@@ -218,12 +221,12 @@ class DescriptionParser implements DataStructure {
 
   /// Helper Method to get the shortest description in a list of [DescriptionRecord]s.
   static (num, DescriptionRecord?) getShortestDescriptionRecord({
-    required final List<DescriptionRecord> descriptions,
+    required List<DescriptionRecord> descriptions,
   }) {
     DescriptionRecord? shortestRecord;
     num maxLength = double.infinity;
 
-    for (final DescriptionRecord currentRecord in descriptions) {
+    for (final currentRecord in descriptions) {
       final num currentLength = currentRecord.$2.length;
       if (currentLength < maxLength) {
         maxLength = currentLength;
@@ -253,19 +256,20 @@ class DescriptionParser implements DataStructure {
   ///     ipsum dolor sit: 2, ...}
   ///
 
-  static Future<Map<String, int>?> createRepeatedPhraseFrequencyMap(
-      {required final List<DescriptionRecord> listOfRecords,
-      required final int minPhraseLength,
-      required final minNumberOfDuplicatesToShow,
-      DBParser? dbParser,
-      bool returnData = false}) async {
-    final Map<String, int> freqMap = {};
+  static Future<Map<String, int>?> createRepeatedPhraseFrequencyMap({
+    required List<DescriptionRecord> listOfRecords,
+    required int minPhraseLength,
+    required int minNumberOfDuplicatesToShow,
+    DBParser? dbParser,
+    bool returnData = false,
+  }) async {
+    final freqMap = <String, int>{};
 
     for (final record in listOfRecords) {
-      final String description = record.$2;
-      final List<String?> phrases =
-          description.separateIntoPhrasesWithMinimumLength(
-              minPhraseLength: minPhraseLength);
+      final description = record.$2;
+      final phrases = description.separateIntoPhrasesWithMinimumLength(
+        minPhraseLength: minPhraseLength,
+      );
 
       for (final phrase in phrases) {
         if (phrase!.isNotEmpty) {
@@ -279,25 +283,26 @@ class DescriptionParser implements DataStructure {
     }
 
     freqMap.removeWhere(
-        (final key, final value) => value < minNumberOfDuplicatesToShow);
-    final sortedList = freqMap.entries.toList()
-      ..sort((final a, final b) => b.value.compareTo(a.value));
+      (key, value) => value < minNumberOfDuplicatesToShow,
+    );
+    final sortedList = freqMap.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
-    final Map<String, int> outPut = Map.fromEntries(sortedList);
+    final outPut = Map<String, int>.fromEntries(sortedList);
 
     if (dbParser != null) {
       await dbParser.fileService.writeFileByType<Null, Map<String, int>>(
-          mapContents: outPut,
-          fileName: FileService.fileNameDuplicatePhrases,
-          convertKeysToStrings: false);
+        mapContents: outPut,
+        fileName: FileService.fileNameDuplicatePhrases,
+        convertKeysToStrings: false,
+      );
     }
     return returnData ? outPut : null;
   }
 
   /// Helper method to check if a food item is in an excluded category.
-  ///  [excludedCategories] can be found in [global_const.dart].
-  static isExcludedCategory({required final Map<dynamic, dynamic> foodItem}) {
-    final foodCategory = foodItem['foodCategory'];
+  ///  [excludedCategories] can be found in `global_const.dart`.
+  static bool isExcludedCategory({required Map<dynamic, dynamic> foodItem}) {
+    final foodCategory = foodItem['foodCategory'] as Map<dynamic, dynamic>;
     final foodCategoryDescription = foodCategory['description'];
     return excludedCategories.contains(foodCategoryDescription);
   }
