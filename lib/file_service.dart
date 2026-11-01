@@ -22,6 +22,7 @@ import 'package:usda_db_creation/extensions/map_ext.dart';
 /// - [fileNameAutocompleteWordIndexKeys] The file name for the autocomplete word index keys file.
 /// - [fileNameAutocompleteHash] The file name for the autocomplete hash file.
 /// - [fileNameFoodsDatabase] The file name for the foods database file.
+/// - [fileNameFoodCategories] The file name for the food categories lookup file.
 /// - [fileNameManifest] The file name for the file manifest file.
 ///
 /// The [FileService] class provides the following methods:
@@ -78,6 +79,9 @@ class FileService {
 
   /// The file name for the foods database file.
   static const fileNameFoodsDatabase = 'foods_db';
+
+  /// The file name for the food categories lookup file.
+  static const fileNameFoodCategories = 'food_categories';
 
   /// The file name for the file manifest file.
   static const fileNameManifest = 'file_manifest';

@@ -11,13 +11,15 @@ void main() {
         final food = FoodModel(
           id: 111111,
           description: 'Food Item',
+          categoryCode: 1800,
           nutrientsMap: nutrients,
         );
 
         final expectation = {
           '111111': {
-            'description': 'Food Item',
-            'nutrients': {'1004': 20, '1003': 10},
+            'd': 'Food Item',
+            'c': 1800,
+            'n': {'1004': 20, '1003': 10},
           },
         };
 
@@ -27,45 +29,40 @@ void main() {
         expect(d.equals(res, expectation), true);
       });
     });
-    // group('fromJson()', () {
-    //   test('fromJson works correctly', () {
-    //     final res = FoodModel.fromJson(mockFoodJson);
+    group('toJsonValue()', () {
+      test('uses the single character keys d, c and n', () {
+        const food = FoodModel(
+          id: 111111,
+          description: 'Food Item',
+          categoryCode: 1800,
+          nutrientsMap: {'1004': 20},
+        );
 
-    //     expect(res.id, 111111);
-    //     expect(res.description,
-    //         'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough');
+        final res = food.toJsonValue();
 
-    //     expect(res.nutrients.length, 5);
-    //     expect(res.nutrients[0].id, 1004);
-    //     expect(res.nutrients[0].name, 'Total Fat');
-    //     expect(res.nutrients[0].amount, 10);
-    //     expect(res.nutrients[0].unit, 'g');
+        expect(res.keys, ['d', 'c', 'n']);
+        expect(res['d'], 'Food Item');
+        expect(res['c'], 1800);
+        expect(res['n'], {'1004': 20});
+      });
+    });
+    group('equality', () {
+      test('foods differing only in categoryCode are not equal', () {
+        const a = FoodModel(
+          id: 1,
+          description: 'Food Item',
+          categoryCode: 1800,
+          nutrientsMap: {'1004': 20},
+        );
+        const b = FoodModel(
+          id: 1,
+          description: 'Food Item',
+          categoryCode: 1400,
+          nutrientsMap: {'1004': 20},
+        );
 
-    //     expect(res.nutrients[1].id, 1003);
-    //     expect(res.nutrients[1].name, 'Protein');
-    //     expect(res.nutrients[1].amount, 5);
-    //     expect(res.nutrients[1].unit, 'g');
-
-    //     expect(res.nutrients[2].id, 1005);
-    //     expect(res.nutrients[2].name, 'Total Carbohydrates');
-    //     expect(res.nutrients[2].amount, 10);
-    //     expect(res.nutrients[2].unit, 'g');
-
-    //     expect(res.nutrients[3].id, 1008);
-    //     expect(res.nutrients[3].name, 'Calories');
-    //     expect(res.nutrients[3].amount, 80);
-    //     expect(res.nutrients[3].unit, 'kcal');
-
-    //     expect(res.nutrients[4].id, 1258);
-    //     expect(res.nutrients[4].name, 'Fatty acids, total saturated');
-    //     expect(res.nutrients[4].amount, 10);
-    //     expect(res.nutrients[4].unit, 'g');
-    //   });
-
-    //   test('fromJson creates nutrients list as <List<Nutrient>>', () {
-    //     final res = FoodModel.fromJson(mockFoodJson);
-    //     expect(res.nutrients, isA<List<Nutrient>>());
-    //   });
-    // });
+        expect(a, isNot(b));
+      });
+    });
   });
 }

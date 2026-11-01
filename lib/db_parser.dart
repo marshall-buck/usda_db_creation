@@ -4,6 +4,7 @@ import 'package:usda_db_creation/data_structure.dart';
 
 import 'package:usda_db_creation/file_service.dart';
 import 'package:usda_db_creation/food_model.dart';
+import 'package:usda_db_creation/global_const.dart';
 
 import 'package:usda_db_creation/nutrient.dart';
 
@@ -21,7 +22,8 @@ class DB implements DataStructure<Map<String, dynamic>?> {
   ///
   /// `dbParser` - the parser holding the decoded `original_usda.json`.
   ///
-  /// `writeFile` - write the result to [FileService.fileNameFoodsDatabase].
+  /// `writeFile` - write the result to [FileService.fileNameFoodsDatabase],
+  /// and the [foodCategories] lookup to [FileService.fileNameFoodCategories].
   /// Defaults to `true`.
   ///
   /// `returnData` - return the built map instead of `null`. Defaults to
@@ -62,6 +64,11 @@ class DB implements DataStructure<Map<String, dynamic>?> {
         convertKeysToStrings: false,
         mapContents: data,
       );
+      await dbParser.fileService.writeFileByType(
+        fileName: FileService.fileNameFoodCategories,
+        convertKeysToStrings: true,
+        mapContents: foodCategories,
+      );
     }
     return returnData ? data : null;
   }
@@ -101,8 +108,11 @@ class DBParser {
   }
 
   /// Method to create the map that wil be used for the foods database.
+  ///
+  /// Throws a [StateError] if a food's category is not in [foodCategories].
+  ///
   /// Returns:
-  /// { id: { description,  nutrients }, ... }
+  /// { id: { d: description, c: categoryCode, n: nutrients }, ... }
   Map<String, dynamic> createFoodsMapDB({
     required List<dynamic> getFoodsList,
     required Map<int, String> finalDescriptionRecordsMap,
@@ -118,6 +128,16 @@ class DBParser {
 
       final foodDescription = finalDescriptionRecordsMap[foodId]!;
 
+      final foodCategory = foodItem['foodCategory'] as Map<dynamic, dynamic>;
+      final categoryDescription = foodCategory['description'] as String;
+      final categoryCode = _categoryCodeByDescription[categoryDescription];
+      if (categoryCode == null) {
+        throw StateError(
+          'Food $foodId has category "$categoryDescription", which is not in '
+          'foodCategories',
+        );
+      }
+
       final foodNutrients = foodItem['foodNutrients'] as List<dynamic>;
 
       final nutrientsList = createNutrientsMap(listOfNutrients: foodNutrients);
@@ -125,6 +145,7 @@ class DBParser {
       final foodModel = FoodModel(
         id: foodId,
         description: foodDescription,
+        categoryCode: categoryCode,
         nutrientsMap: nutrientsList,
       );
 
@@ -133,6 +154,12 @@ class DBParser {
 
     return foodsMap;
   }
+
+  /// [foodCategories] inverted, so a food's category description resolves to
+  /// its code.
+  static final Map<String, int> _categoryCodeByDescription = {
+    for (final entry in foodCategories.entries) entry.value: entry.key,
+  };
 
   /// Method to create the nutrients list that will be used for the foods database.
   ///
@@ -236,11 +263,13 @@ class DBParser {
 
   /******************************* Research Methods **************************/
 
-  /// Retrieves the food categories from the database.
-  /// Informational method
-  /// Returns a [Map] containing the food categories as keys and their
-  /// corresponding IDs as values. The second element of the
-  /// returned record represents the total number of food categories.
+  /// Counts the foods in each category of the source database.
+  ///
+  /// Informational, and not part of the pipeline. The codes written to
+  /// `foods_db.json` come from [foodCategories], not from this method.
+  ///
+  /// Returns a [Map] of category name to the number of foods in it, plus a
+  /// `total` entry holding the number of foods counted.
   /// Returns:
   /// {"category1": 1, "category2": 2, ..., "total": 3}
   Map<String, int> getFoodCategories() {

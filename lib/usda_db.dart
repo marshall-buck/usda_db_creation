@@ -56,12 +56,12 @@ import 'package:usda_db_creation/word_index.dart';
 /// optional boolean parameter [extras] to indicate whether to include extra files.
 ///
 /// If [extras] is set to true, the function generates additional files including
-/// description records, word index map, substring map, autocomplete hash table,
-/// and the database itself. These files are written to disk.
+/// description records, word index map and substring map. These files are
+/// written to disk.
 ///
-/// If [extras] is set to false, the function generates only the necessary files
-/// for the database creation process, excluding the additional files.
-/// These files are not written to disk.
+/// Either way, the autocomplete hash table, the foods database, the food
+/// categories lookup and the manifest are written to disk. With [extras] set
+/// to false the intermediate structures are still built, just not written.
 ///
 /// Note: The [DBParser] object must be properly initialized before calling this function.
 ///
@@ -86,7 +86,8 @@ Future<void> createDBFiles({
 }) async {
   // [extras] only decides whether the three intermediate structures are also
   // written to disk. They are built and chained the same way either way, and
-  // the hash table and the database are always written.
+  // the hash table, the database and the food categories lookup are always
+  // written.
   final descriptions = DescriptionParser();
   final desMap = await descriptions.createDataStructure(
     dbParser: dbParser,

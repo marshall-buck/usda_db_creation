@@ -1,5 +1,3 @@
-import 'package:usda_db_creation/food_model.dart';
-
 const mockDescriptionTxtFile = '''
 (167512, Pillsbury Golden Layer Buttermilk Biscuits, (Artificial Flavor,) refrigerated dough)
 (167513, Pillsbury, Cinnamon Rolls with Icing, 100% refrigerated dough)
@@ -13,19 +11,6 @@ const mockDescriptionMap = {
 };
 
 const nutrientMap = {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10};
-
-const mockFoodItem = FoodModel(
-  id: 111111,
-  description: 'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
-  nutrientsMap: nutrientMap,
-);
-const Map<int, dynamic> mockFoodJson = {
-  111111: {
-    'description':
-        'Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough',
-    'nutrients': {'1004': 10, '1003': 5, '1005': 10, '1008': 80, '1258': 10},
-  },
-};
 
 const mockNutrientCSVFile = '''
 "id","name","unit_name","nutrient_nbr","rank"
