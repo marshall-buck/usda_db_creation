@@ -59,9 +59,10 @@ import 'package:usda_db_creation/word_index.dart';
 /// description records, word index map and substring map. These files are
 /// written to disk.
 ///
-/// Either way, the autocomplete hash table, the foods database, the food
-/// categories lookup and the manifest are written to disk. With [extras] set
-/// to false the intermediate structures are still built, just not written.
+/// Either way, the autocomplete hash table, the foods database and the
+/// manifest are written to disk, the three files the db package reads. With
+/// [extras] set to false the intermediate structures are still built, just not
+/// written.
 ///
 /// Note: The [DBParser] object must be properly initialized before calling this function.
 ///
@@ -69,7 +70,7 @@ import 'package:usda_db_creation/word_index.dart';
 /// ```dart
 /// final dbParser = DBParser();
 /// final fileService = FileService();
-/// await createDBFiles(dbParser: dbParser, fileService: fileService, extras: true);
+/// await createDBFiles(dbParser: dbParser, fileService: fileService);
 /// ```
 ///
 /// [dbParser] The [DBParser] object containing the original foods list.
@@ -86,8 +87,7 @@ Future<void> createDBFiles({
 }) async {
   // [extras] only decides whether the three intermediate structures are also
   // written to disk. They are built and chained the same way either way, and
-  // the hash table, the database and the food categories lookup are always
-  // written.
+  // the hash table, the database and the manifest are always written.
   final descriptions = DescriptionParser();
   final desMap = await descriptions.createDataStructure(
     dbParser: dbParser,

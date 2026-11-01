@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.0.1
+
+- `food_categories.json` is no longer written. The category table is now the
+  static `FoodModel.foodCategories`, like the nutrient tables on `Nutrient`.
+- `dart run` now writes only the 3 files the db package reads:
+  `foods_db.json`, `autocomplete_hash.json` and `file_manifest.txt`.
+
 ## 2.0.0
 
 - **BREAKING:** the keys inside each `foods_db.json` record are renamed to

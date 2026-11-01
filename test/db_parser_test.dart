@@ -3,7 +3,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:usda_db_creation/db_parser.dart';
 import 'package:usda_db_creation/file_service.dart';
-import 'package:usda_db_creation/global_const.dart';
 
 import 'package:usda_db_creation/nutrient.dart';
 
@@ -72,7 +71,7 @@ void main() {
     });
 
     group('createFoodsMapDB() category - ', () {
-      test('throws a StateError when a food category is not in foodCategories', () {
+      test('throws a StateError when a food category is not in FoodModel.foodCategories', () {
         final unknownCategoryFile = mockUsdaFile.replaceFirst(
           '"description": "Beverages"',
           '"description": "Not A Category"',
@@ -120,7 +119,7 @@ void main() {
         ).thenAnswer((_) async {});
       });
 
-      test('writes foods_db and the food_categories lookup by default', () async {
+      test('writes only foods_db by default', () async {
         final dbParser = DBParser.init(filePath: 'fake', fileService: mockFileLoaderService);
 
         final res = await DB(mockDescriptionMap).createDataStructure(dbParser: dbParser);
@@ -133,13 +132,13 @@ void main() {
             mapContents: any(named: 'mapContents'),
           ),
         ).called(1);
-        verify(
+        verifyNever(
           () => mockFileLoaderService.writeFileByType(
-            fileName: FileService.fileNameFoodCategories,
-            convertKeysToStrings: true,
-            mapContents: foodCategories,
+            fileName: any(named: 'fileName', that: isNot(FileService.fileNameFoodsDatabase)),
+            convertKeysToStrings: any(named: 'convertKeysToStrings'),
+            mapContents: any(named: 'mapContents'),
           ),
-        ).called(1);
+        );
       });
 
       test('writes nothing when writeFile is false', () async {

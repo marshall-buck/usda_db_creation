@@ -23,7 +23,6 @@ void main() async {
   await runner.createDBFiles(
     dbParser: dbParser,
     fileService: fileService,
-    extras: true,
   );
 
   // `runner.getLongestDescription` and `runner.getShortestDescription` each

@@ -28,10 +28,10 @@ file inside is prefixed with the microseconds portion of that timestamp, for
 example `lib/db/2024-10-21_20_05_15.765190/765190_foods_db.json`. The
 `file_manifest.txt` written beside them contains just that prefix.
 
-`bin/usda_db_creation.dart` calls `createDBFiles` with `extras: true`, which
-writes every file listed under [Behind the scenes](#behind-the-scenes). With
-`extras: false` only `foods_db.json`, `food_categories.json` and
-`autocomplete_hash.json` are written.
+`bin/usda_db_creation.dart` calls `createDBFiles` with `extras` left at
+`false`, so only the 3 files the db package reads are written: `foods_db.json`,
+`autocomplete_hash.json` and `file_manifest.txt`. With `extras: true` every file
+listed under [Behind the scenes](#behind-the-scenes) is written as well.
 
 ## Breaking change in 2.0.0: `foods_db.json` keys
 
@@ -41,16 +41,20 @@ small. Anything reading `foods_db.json` must be updated:
 | Before        | Now | Value                                              |
 | ------------- | --- | -------------------------------------------------- |
 | `description` | `d` | the food description                               |
-| *(new)*       | `c` | the food category code, see `food_categories.json` |
+| *(new)*       | `c` | the food category code, see `FoodModel.foodCategories` |
 | `nutrients`   | `n` | the nutrients map                                  |
 
-## The intended output is 3 json files
+## The intended output is 3 files
 
 1. The foods and nutritional information, `foods_db.json`.
 
    - The key is the food item's id.
    - `d` is the description, `c` is the food category code and `n` is the
      nutrients map.
+   - The category codes are the USDA codes from `food_category.csv` read as
+     integers, so `0100` is `100`. They resolve with the static
+     `FoodModel.foodCategories` table, the same way nutrient ids resolve with
+     `Nutrient.originalNutrientTableEdit`; no categories file is written.
    - The nutrients map is structured so that the key is the id of the
      nutrient and the value is the amount.
    - All keys are strings, since they are json object keys.
@@ -67,23 +71,7 @@ small. Anything reading `foods_db.json` must be updated:
    };
    ```
 
-2. The food category lookup, `food_categories.json`.
-
-   - The key is the category code used by `c` in `foods_db.json`, the value is
-     the category name.
-   - The codes are the USDA codes from `food_category.csv` read as integers, so
-     `0100` is `100`. All 28 USDA categories are listed, including ones no
-     written food uses.
-
-   ```text
-   {
-     '100': 'Dairy and Egg Products',
-     '1300': 'Beef Products',
-     '1800': 'Baked Products', ...
-   };
-   ```
-
-3. A lookup hash table of indexed words to search, `autocomplete_hash.json`.
+2. A lookup hash table of indexed words to search, `autocomplete_hash.json`.
 
    - Each `substringHash` value is a key into `indexHash`.
    - Each `indexHash` value is the list of food ids whose descriptions contain
@@ -115,6 +103,9 @@ small. Anything reading `foods_db.json` must be updated:
    ```
 
    <!-- CSpell: enable -->
+
+3. The manifest, `file_manifest.txt`, holding just the file prefix, so the db
+   package can rebuild the names of the other two files.
 
 ## Behind the scenes
 
@@ -265,10 +256,10 @@ real ones. The same four run through every step: `apple` appears in `1` and `2`,
    <!-- CSpell: enable -->
 
 5. Create the food Database object, and convert to json, written to
-   `foods_db.json`. The category table in `global_const.dart` is written
-   alongside it to `food_categories.json`.
+   `foods_db.json`.
 
-   Each food's USDA category name is converted to its code with that table, and
+   Each food's USDA category name is converted to its code with
+   `FoodModel.foodCategories`, and
    an unknown category stops the run with a `StateError`.
 
    Only the nutrient ids in `Nutrient.keepTheseNutrients` are kept, and a

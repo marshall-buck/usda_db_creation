@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:usda_db_creation/food_model.dart';
+import 'package:usda_db_creation/global_const.dart';
 
 void main() {
   group('Food Model class tests', () {
@@ -62,6 +65,36 @@ void main() {
         );
 
         expect(a, isNot(b));
+      });
+    });
+
+    group('foodCategories', () {
+      test('matches every code and description in food_category.csv', () {
+        final rows = File('food_category.csv')
+            .readAsLinesSync()
+            .skip(1)
+            .where((line) => line.trim().isNotEmpty)
+            .map((line) {
+          final match = RegExp(r'^"\d+","(\d+)","(.*)"$').firstMatch(line)!;
+          return MapEntry(int.parse(match.group(1)!), match.group(2)!);
+        });
+        final fromCsv = Map.fromEntries(rows);
+
+        expect(fromCsv.length, 28);
+        expect(FoodModel.foodCategories, fromCsv);
+      });
+
+      test('has no duplicate descriptions, so the reverse lookup is safe', () {
+        expect(
+          FoodModel.foodCategories.values.toSet().length,
+          FoodModel.foodCategories.length,
+        );
+      });
+
+      test('covers every excluded category', () {
+        for (final category in excludedCategories) {
+          expect(FoodModel.foodCategories.values, contains(category));
+        }
       });
     });
   });

@@ -4,8 +4,6 @@ import 'package:usda_db_creation/data_structure.dart';
 
 import 'package:usda_db_creation/file_service.dart';
 import 'package:usda_db_creation/food_model.dart';
-import 'package:usda_db_creation/global_const.dart';
-
 import 'package:usda_db_creation/nutrient.dart';
 
 /// Class to create the main database of food items and nutrient information.
@@ -22,8 +20,7 @@ class DB implements DataStructure<Map<String, dynamic>?> {
   ///
   /// `dbParser` - the parser holding the decoded `original_usda.json`.
   ///
-  /// `writeFile` - write the result to [FileService.fileNameFoodsDatabase],
-  /// and the [foodCategories] lookup to [FileService.fileNameFoodCategories].
+  /// `writeFile` - write the result to [FileService.fileNameFoodsDatabase].
   /// Defaults to `true`.
   ///
   /// `returnData` - return the built map instead of `null`. Defaults to
@@ -63,11 +60,6 @@ class DB implements DataStructure<Map<String, dynamic>?> {
         fileName: FileService.fileNameFoodsDatabase,
         convertKeysToStrings: false,
         mapContents: data,
-      );
-      await dbParser.fileService.writeFileByType(
-        fileName: FileService.fileNameFoodCategories,
-        convertKeysToStrings: true,
-        mapContents: foodCategories,
       );
     }
     return returnData ? data : null;
@@ -109,7 +101,8 @@ class DBParser {
 
   /// Method to create the map that wil be used for the foods database.
   ///
-  /// Throws a [StateError] if a food's category is not in [foodCategories].
+  /// Throws a [StateError] if a food's category is not in
+  /// [FoodModel.foodCategories].
   ///
   /// Returns:
   /// { id: { d: description, c: categoryCode, n: nutrients }, ... }
@@ -134,7 +127,7 @@ class DBParser {
       if (categoryCode == null) {
         throw StateError(
           'Food $foodId has category "$categoryDescription", which is not in '
-          'foodCategories',
+          'FoodModel.foodCategories',
         );
       }
 
@@ -155,10 +148,10 @@ class DBParser {
     return foodsMap;
   }
 
-  /// [foodCategories] inverted, so a food's category description resolves to
-  /// its code.
+  /// [FoodModel.foodCategories] inverted, so a food's category description
+  /// resolves to its code.
   static final Map<String, int> _categoryCodeByDescription = {
-    for (final entry in foodCategories.entries) entry.value: entry.key,
+    for (final entry in FoodModel.foodCategories.entries) entry.value: entry.key,
   };
 
   /// Method to create the nutrients list that will be used for the foods database.
@@ -266,7 +259,8 @@ class DBParser {
   /// Counts the foods in each category of the source database.
   ///
   /// Informational, and not part of the pipeline. The codes written to
-  /// `foods_db.json` come from [foodCategories], not from this method.
+  /// `foods_db.json` come from [FoodModel.foodCategories], not from this
+  /// method.
   ///
   /// Returns a [Map] of category name to the number of foods in it, plus a
   /// `total` entry holding the number of foods counted.
