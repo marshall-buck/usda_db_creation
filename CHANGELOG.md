@@ -1,3 +1,5 @@
+# CHANGELOG
+
 ## 2.0.0
 
 - **BREAKING:** the keys inside each `foods_db.json` record are renamed to
@@ -7,4 +9,3 @@
   int, for example `1800` for `Baked Products`.
 - A new `food_categories.json` is written beside `foods_db.json`, mapping every
   category code to its name, for example `{"1800": "Baked Products", ...}`.
-
